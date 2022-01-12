@@ -3,7 +3,7 @@
 -- https://www.phpmyadmin.net/
 --
 -- Host: 127.0.0.1:3306
--- Generation Time: Jan 08, 2022 at 05:55 AM
+-- Generation Time: Jan 12, 2022 at 01:39 PM
 -- Server version: 5.7.31
 -- PHP Version: 7.3.21
 
@@ -48,7 +48,32 @@ CREATE TABLE IF NOT EXISTS `identitas` (
 --
 
 INSERT INTO `identitas` (`kode`, `instansi`, `tahun`, `pimpinan`, `alamat`, `kdpos`, `tlp`, `fax`, `website`, `email`, `logo`) VALUES
-('K00001', 'TNI ANGKATAN LAUT', 1945, 'Yudo Margono', 'Komplek Militer Cilangkap, Cilangkap, Cipayung, Kota Jakarta Timur', '13870', '0218723308', '0218710628', 'https://www.tnial.mil.id/', 'rampapraditya@gmail.com', './assets/img/abd1cd075a9eee465639fbbd229de2d5.png');
+('K00001', 'TNI ANGKATAN LAUT', 1945, 'Yudo Margono', 'Komplek Militer Cilangkap, Cilangkap, Cipayung, Kota Jakarta Timur', '13870', '0218723308', '0218710628', 'https://www.tnial.mil.id/', 'rampapraditya@gmail.com', './assets/img/fe26482c6e591a85e6c9bc9a664f8895.png');
+
+-- --------------------------------------------------------
+
+--
+-- Table structure for table `komplek`
+--
+
+DROP TABLE IF EXISTS `komplek`;
+CREATE TABLE IF NOT EXISTS `komplek` (
+  `idkomplek` varchar(6) NOT NULL,
+  `nama_komplek` varchar(150) NOT NULL,
+  `lat` varchar(45) NOT NULL,
+  `lon` varchar(45) NOT NULL,
+  PRIMARY KEY (`idkomplek`)
+) ENGINE=InnoDB DEFAULT CHARSET=latin1;
+
+--
+-- Dumping data for table `komplek`
+--
+
+INSERT INTO `komplek` (`idkomplek`, `nama_komplek`, `lat`, `lon`) VALUES
+('K00001', 'Komplek Sunter', '-6.163251', '106.885772'),
+('K00002', 'Komplek Cilandak (PERWIRA)', '-6.30112526873089', '106.81249544440927'),
+('K00003', 'Komplek Cilandak (BINTARA)', '-6.300760', '106.812769'),
+('K00004', 'Komplek Cilandak (TAMTAMA)', '-6.304796', '106.809967');
 
 -- --------------------------------------------------------
 
@@ -147,60 +172,6 @@ INSERT INTO `pangkat` (`idpangkat`, `nama_pangkat`) VALUES
 -- --------------------------------------------------------
 
 --
--- Table structure for table `personil`
---
-
-DROP TABLE IF EXISTS `personil`;
-CREATE TABLE IF NOT EXISTS `personil` (
-  `idpersonil` varchar(6) NOT NULL,
-  `nrp` varchar(45) NOT NULL,
-  `nama` varchar(45) NOT NULL,
-  `idpangkat` varchar(6) NOT NULL,
-  `idkorps` varchar(6) NOT NULL,
-  `status` varchar(45) NOT NULL,
-  PRIMARY KEY (`idpersonil`),
-  KEY `FK_personil_pangkat` (`idpangkat`),
-  KEY `FK_personil_korps` (`idkorps`)
-) ENGINE=InnoDB DEFAULT CHARSET=latin1;
-
---
--- Dumping data for table `personil`
---
-
-INSERT INTO `personil` (`idpersonil`, `nrp`, `nama`, `idpangkat`, `idkorps`, `status`) VALUES
-('P00001', '111', 'Rampa Praditya', 'P00011', 'K00001', 'AKTIF'),
-('P00002', '222', 'Dinda', 'P00018', 'K00008', 'AKTIF');
-
--- --------------------------------------------------------
-
---
--- Table structure for table `personil_keluarga`
---
-
-DROP TABLE IF EXISTS `personil_keluarga`;
-CREATE TABLE IF NOT EXISTS `personil_keluarga` (
-  `idpers_kel` varchar(8) NOT NULL,
-  `nama` varchar(45) DEFAULT NULL,
-  `jkel` varchar(12) DEFAULT NULL,
-  `tmp_lahir` varchar(45) DEFAULT NULL,
-  `tgl_lahir` date DEFAULT NULL,
-  `hubungan` varchar(45) DEFAULT NULL,
-  `idpersonil` varchar(6) NOT NULL,
-  PRIMARY KEY (`idpers_kel`),
-  KEY `FK_personil_keluarga_pers` (`idpersonil`)
-) ENGINE=InnoDB DEFAULT CHARSET=latin1;
-
---
--- Dumping data for table `personil_keluarga`
---
-
-INSERT INTO `personil_keluarga` (`idpers_kel`, `nama`, `jkel`, `tmp_lahir`, `tgl_lahir`, `hubungan`, `idpersonil`) VALUES
-('K0000001', 'Atika', 'Perempuan', 'Lamongan', '1990-12-31', 'ISTRI', 'P00001'),
-('K0000002', 'Ratika', 'Perempuan', 'Surabaya', '2021-12-01', 'ANAK', 'P00001');
-
--- --------------------------------------------------------
-
---
 -- Table structure for table `role`
 --
 
@@ -222,58 +193,6 @@ INSERT INTO `role` (`idrole`, `nama_role`) VALUES
 -- --------------------------------------------------------
 
 --
--- Table structure for table `rumah_dinas`
---
-
-DROP TABLE IF EXISTS `rumah_dinas`;
-CREATE TABLE IF NOT EXISTS `rumah_dinas` (
-  `idrumah_dinas` varchar(6) NOT NULL,
-  `nama_rumdis` varchar(45) NOT NULL,
-  `alamat` varchar(150) DEFAULT NULL,
-  `foto` varchar(250) DEFAULT NULL,
-  `lat` varchar(100) DEFAULT NULL,
-  `lon` varchar(100) DEFAULT NULL,
-  `idpersonil` varchar(6) NOT NULL,
-  PRIMARY KEY (`idrumah_dinas`),
-  KEY `idpersonil` (`idpersonil`)
-) ENGINE=InnoDB DEFAULT CHARSET=latin1;
-
---
--- Dumping data for table `rumah_dinas`
---
-
-INSERT INTO `rumah_dinas` (`idrumah_dinas`, `nama_rumdis`, `alamat`, `foto`, `lat`, `lon`, `idpersonil`) VALUES
-('R00001', 'Rumah Utama', 'Graha Gunung Anyar Tambak Barat', './assets/img/dae94dbdfdc62e56135f90ff6cce6014.jpeg', '-7.885147283424331', '112.62901840153437', 'U00002'),
-('R00002', 'Rumah Dinda', 'jl. pakis tirtosari surabaya', NULL, '-7.068185318145826', '111.73591892264102', 'U00003');
-
--- --------------------------------------------------------
-
---
--- Table structure for table `sip`
---
-
-DROP TABLE IF EXISTS `sip`;
-CREATE TABLE IF NOT EXISTS `sip` (
-  `idsip` varchar(6) NOT NULL,
-  `idpersonil` varchar(6) NOT NULL,
-  `idrumah_dinas` varchar(6) NOT NULL,
-  `no_sip` varchar(150) NOT NULL,
-  `berkas` varchar(150) DEFAULT NULL,
-  PRIMARY KEY (`idsip`),
-  KEY `FK_sip_personil` (`idpersonil`),
-  KEY `FK_sip_rumah_dinas` (`idrumah_dinas`)
-) ENGINE=InnoDB DEFAULT CHARSET=latin1;
-
---
--- Dumping data for table `sip`
---
-
-INSERT INTO `sip` (`idsip`, `idpersonil`, `idrumah_dinas`, `no_sip`, `berkas`) VALUES
-('S00001', 'P00001', 'R00001', 'SIP0001', './assets/file/965f361f4f7b95c49dd52c50ca06e377.pdf');
-
--- --------------------------------------------------------
-
---
 -- Table structure for table `userslogin`
 --
 
@@ -285,6 +204,8 @@ CREATE TABLE IF NOT EXISTS `userslogin` (
   `nama` varchar(45) NOT NULL,
   `foto` varchar(150) DEFAULT NULL,
   `idrole` varchar(2) NOT NULL,
+  `idpangkat` varchar(6) NOT NULL,
+  `idkorps` varchar(6) NOT NULL,
   PRIMARY KEY (`iduserslogin`),
   KEY `FK_userslogin_role` (`idrole`)
 ) ENGINE=InnoDB DEFAULT CHARSET=latin1;
@@ -293,35 +214,15 @@ CREATE TABLE IF NOT EXISTS `userslogin` (
 -- Dumping data for table `userslogin`
 --
 
-INSERT INTO `userslogin` (`iduserslogin`, `nrp`, `pass`, `nama`, `foto`, `idrole`) VALUES
-('U00001', 'ADMIN', 'aGtq', 'ADMINISTRATOR', '', 'R1'),
-('U00002', '111', 'aGtq', 'Rampa Praditya', './assets/img/3f627fb11cbc3b6e0050208ad95cad41.PNG', 'R2'),
-('U00003', '222', 'aGtq', 'Dinda', './assets/img/c1292bc7dcd9a04325f6f8750bfcf72a.jpg', 'R2'),
-('U00004', '333', 'aGtq', 'Atika', './assets/img/7d82164b1e635bbac9a0b4167d978bc2.PNG', 'R2');
+INSERT INTO `userslogin` (`iduserslogin`, `nrp`, `pass`, `nama`, `foto`, `idrole`, `idpangkat`, `idkorps`) VALUES
+('U00001', 'ADMIN', 'aGtq', 'ADMINISTRATOR', '', 'R1', 'P00001', ''),
+('U00002', '111', 'aGtq', 'Rampa Praditya', './assets/img/3f627fb11cbc3b6e0050208ad95cad41.PNG', 'R2', 'P00001', ''),
+('U00003', '222', 'aGtq', 'Dinda', './assets/img/c1292bc7dcd9a04325f6f8750bfcf72a.jpg', 'R2', 'P00001', ''),
+('U00004', '333', 'aGtq', 'Atika', './assets/img/7d82164b1e635bbac9a0b4167d978bc2.PNG', 'R2', 'P00001', '');
 
 --
 -- Constraints for dumped tables
 --
-
---
--- Constraints for table `personil`
---
-ALTER TABLE `personil`
-  ADD CONSTRAINT `FK_personil_korps` FOREIGN KEY (`idkorps`) REFERENCES `korps` (`idkorps`) ON DELETE CASCADE ON UPDATE CASCADE,
-  ADD CONSTRAINT `FK_personil_pangkat` FOREIGN KEY (`idpangkat`) REFERENCES `pangkat` (`idpangkat`) ON DELETE CASCADE ON UPDATE CASCADE;
-
---
--- Constraints for table `personil_keluarga`
---
-ALTER TABLE `personil_keluarga`
-  ADD CONSTRAINT `FK_personil_keluarga_pers` FOREIGN KEY (`idpersonil`) REFERENCES `personil` (`idpersonil`) ON DELETE CASCADE ON UPDATE CASCADE;
-
---
--- Constraints for table `sip`
---
-ALTER TABLE `sip`
-  ADD CONSTRAINT `FK_sip_personil` FOREIGN KEY (`idpersonil`) REFERENCES `personil` (`idpersonil`) ON DELETE CASCADE ON UPDATE CASCADE,
-  ADD CONSTRAINT `FK_sip_rumah_dinas` FOREIGN KEY (`idrumah_dinas`) REFERENCES `rumah_dinas` (`idrumah_dinas`) ON DELETE CASCADE ON UPDATE CASCADE;
 
 --
 -- Constraints for table `userslogin`

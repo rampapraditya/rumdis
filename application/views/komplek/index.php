@@ -89,9 +89,9 @@
     }
 
     function hapus(id, nama) {
-        if (confirm("Apakah anda yakin menghapus pangkat " + nama + " ?")) {
+        if (confirm("Apakah anda yakin menghapus komplek " + nama + " ?")) {
             $.ajax({
-                url: "<?php echo base_url(); ?>pangkat/hapus/" + id,
+                url: "<?php echo base_url(); ?>komplek/hapus/" + id,
                 type: "POST",
                 dataType: "JSON",
                 success: function (data) {
@@ -118,14 +118,16 @@
         save_method = 'update';
         $('#form')[0].reset(); // reset form on modals
         $('#modal_form').modal('show'); // show bootstrap modal when complete loaded
-        $('.modal-title').text('Ganti pangkat'); // Set title to Bootstrap modal title        
+        $('.modal-title').text('Ganti komplek'); // Set title to Bootstrap modal title        
         $.ajax({
-            url: "<?php echo base_url(); ?>pangkat/ganti/" + id,
+            url: "<?php echo base_url(); ?>komplek/ganti/" + id,
             type: "POST",
             dataType: "JSON",
             success: function (data) {
-                $('[name="kode"]').val(data.idpangkat);
-                $('[name="nama"]').val(data.nama_pangkat);
+                $('[name="kode"]').val(data.idkomplek);
+                $('[name="nama"]').val(data.nama_komplek);
+                $('[name="lat"]').val(data.lat);
+                $('[name="lon"]').val(data.lon);
             },
             error: function (jqXHR, textStatus, errorThrown) {
                 

@@ -89,14 +89,16 @@ class Komplek extends CI_Controller {
     public function ajax_edit() {
         if($this->session->userdata('logged')){
             $data = array(
-                'nama_pangkat' => $this->input->post('nama')
+                'nama_komplek' => $this->input->post('nama'),
+                'lat' => $this->input->post('lat'),
+                'lon' => $this->input->post('lon')
             );
-            $kond['idpangkat'] = $this->input->post('kode');
-            $update = $this->Mglobals->update("pangkat",$data, $kond);
+            $kond['idkomplek'] = $this->input->post('kode');
+            $update = $this->Mglobals->update("komplek",$data, $kond);
             if($update == 1){
-                $status = "Pangkat terupdate";
+                $status = "Komplek terupdate";
             }else{
-                $status = "Pangkat gagal terupdate";
+                $status = "Komplek gagal terupdate";
             }
             echo json_encode(array("status" => $status));
         }else{
@@ -106,12 +108,12 @@ class Komplek extends CI_Controller {
     
     public function hapus() {
         if($this->session->userdata('logged')){
-            $kondisi['idpangkat'] = $this->uri->segment(3);
-            $hapus = $this->Mglobals->delete("pangkat",$kondisi);
+            $kondisi['idkomplek'] = $this->uri->segment(3);
+            $hapus = $this->Mglobals->delete("komplek",$kondisi);
             if($hapus == 1){
-                $status = "Pangkat terhapus";
+                $status = "Komplek terhapus";
             }else{
-                $status = "Pangkat gagal terhapus";
+                $status = "Komplek gagal terhapus";
             }
             echo json_encode(array("status" => $status));
         }else{

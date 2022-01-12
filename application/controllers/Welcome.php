@@ -17,9 +17,8 @@ class Welcome extends CI_Controller {
             $data['username'] = $ses['iduser'];
             $data['nrp'] = $ses['nrp'];
             $data['nama'] = $ses['nama'];
-            $data['jml_penghuni'] = $this->Mglobals->getAllQR("select count(*) as jml from personil;")->jml;
-            $data['jml_rumdis'] = $this->Mglobals->getAllQR("select count(*) as jml from rumah_dinas;")->jml;
-            $data['jml_sip'] = $this->Mglobals->getAllQR("select count(*) as jml from sip;")->jml;
+            $data['jml_penghuni'] = 0;
+            $data['jml_rumdis'] = $this->Mglobals->getAllQR("select count(*) as jml from komplek;")->jml;
             
             $jml_identitas = $this->Mglobals->getAllQR("SELECT count(*) as jml FROM identitas;")->jml;
             if($jml_identitas > 0){
@@ -58,9 +57,9 @@ class Welcome extends CI_Controller {
     private function load_lokasi() {
         $gambar = base_url().'assets/marker/marker.png';
         $string = '';
-        $list = $this->Mglobals->getAll("rumah_dinas");
+        $list = $this->Mglobals->getAll("komplek");
         foreach ($list->result() as $row) {
-            $string .= 'createMarker(['.$row->lat.','.$row->lon.'], "'.$row->alamat.'", "'.$row->idrumah_dinas.'","'.$gambar.'", 20, 20);';
+            $string .= 'createMarker(['.$row->lat.','.$row->lon.'], "'.$row->nama_komplek.'", "'.$row->idkomplek.'","'.$gambar.'", 20, 20);';
         }
         return $string;
     }
