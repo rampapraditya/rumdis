@@ -20,6 +20,9 @@ class Komplek extends CI_Controller {
             $data['nrp'] = $ses['nrp'];
             $data['nama'] = $ses['nama'];
             
+            $data['lat'] = "-1.845383988573187";
+            $data['lon'] = "121.79800978057857";
+            
             $this->load->view('head', $data);
             $this->load->view('menu');
             $this->load->view('komplek/index');
