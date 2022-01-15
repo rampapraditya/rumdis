@@ -18,10 +18,6 @@ class Welcomeuser extends CI_Controller {
             $data['nrp'] = $ses['nrp'];
             $data['nama'] = $ses['nama'];
             
-            $data['jml_penghuni'] = $this->Mglobals->getAllQR("select count(*) as jml from personil;")->jml;
-            $data['jml_rumdis'] = $this->Mglobals->getAllQR("select count(*) as jml from rumah_dinas;")->jml;
-            $data['jml_sip'] = $this->Mglobals->getAllQR("select count(*) as jml from sip;")->jml;
-            
             $jml_identitas = $this->Mglobals->getAllQR("SELECT count(*) as jml FROM identitas;")->jml;
             if($jml_identitas > 0){
                 $tersimpan = $this->Mglobals->getAllQR("SELECT * FROM identitas;");

@@ -1,13 +1,11 @@
+<script type="text/javascript">
+
+    $(document).ready(function () {
+
+    });
+
+</script>
 <div class="main-content">
-
-    <script type="text/javascript">
-
-        $(document).ready(function () {
-            
-        });
-
-    </script>
-
     <section class="section">
         <div class="row">
             <div class="col-lg-4 col-md-4 col-sm-12">
@@ -15,14 +13,14 @@
                     <div class="card-wrap">
                         <div class="card-body">
                             <div class="card-icon shadow-primary bg-primary">
-                                <i class="fas fa-user"></i>
+                                <i class="fas fa-home"></i>
                             </div>
                             <div class="card-wrap">
                                 <div class="card-header">
-                                    <h4>DATA PENGHUNI</h4>
+                                    <h4>KOMPLEK</h4>
                                 </div>
                                 <div class="card-body">
-                                    <?php echo $jml_penghuni; ?>
+                                    0
                                 </div>
                             </div>
                         </div>
@@ -34,14 +32,14 @@
                     <div class="card-wrap">
                         <div class="card-body">
                             <div class="card-icon shadow-primary bg-primary">
-                                <i class="fas fa-home"></i>
+                                <i class="fas fa-user"></i>
                             </div>
                             <div class="card-wrap">
                                 <div class="card-header">
-                                    <h4>RUMDIS</h4>
+                                    <h4>PENGGUNA</h4>
                                 </div>
                                 <div class="card-body">
-                                    <?php echo $jml_rumdis; ?>
+                                    0
                                 </div>
                             </div>
                         </div>

@@ -19,6 +19,7 @@ class Users extends CI_Controller {
             $data['nama'] = $ses['nama'];
             $data['pangkat'] = $this->Mglobals->getAllQ("select * from pangkat where nama_pangkat <> 'ADMINISTRATOR';");
             $data['korps'] = $this->Mglobals->getAll("korps");
+            $data['komplek'] = $this->Mglobals->getAll("komplek");
             
             $this->load->view('head', $data);
             $this->load->view('menu');
@@ -46,6 +47,12 @@ class Users extends CI_Controller {
                 $val[] = $row->nama_korps;
                 $val[] = $row->nrp;
                 $val[] = $row->nama;
+                // mencari komplek
+                if(strlen($row->idkomplek) > 0){
+                    $val[] = $this->Mglobals->getAllQR("select nama_komplek from komplek where idkomplek = '".$row->idkomplek."';")->nama_komplek;
+                }else{
+                    $val[] = "";
+                }
                 $val[] = '<div style="text-align: center;">'
                         . '<a class="btn btn-xs btn-outline-primary" href="javascript:void(0)" title="Edit" onclick="ganti('."'".$row->iduserslogin."'".')"> Edit</a>&nbsp;'
                         . '<a class="btn btn-xs btn-outline-danger" href="javascript:void(0)" title="Hapus" onclick="hapus('."'".$row->iduserslogin."'".','."'".$row->nrp."'".')"> Delete</a>&nbsp;'
@@ -107,7 +114,8 @@ class Users extends CI_Controller {
                     'foto' => $newpath,
                     'idrole' => 'R2',
                     'idpangkat' => $this->input->post('pangkat'),
-                    'idkorps' => $this->input->post('korps')
+                    'idkorps' => $this->input->post('korps'),
+                    'idkomplek' => $this->input->post('komplek')
                 );
                 $simpan = $this->Mglobals->add("userslogin",$data);
                 if($simpan == 1){
@@ -134,7 +142,8 @@ class Users extends CI_Controller {
             'foto' => '',
             'idrole' => 'R2',
             'idpangkat' => $this->input->post('pangkat'),
-            'idkorps' => $this->input->post('korps')
+            'idkorps' => $this->input->post('korps'),
+            'idkomplek' => $this->input->post('komplek')
         );
         $simpan = $this->Mglobals->add("userslogin",$data);
         if($simpan == 1){
@@ -148,7 +157,7 @@ class Users extends CI_Controller {
     public function ganti(){
         if($this->session->userdata('logged')){
             $iduserslogin = $this->uri->segment(3);
-            $data = $this->Mglobals->getAllQR("SELECT iduserslogin, nrp, pass, nama, idpangkat, idkorps FROM userslogin where iduserslogin = '".$iduserslogin."';");
+            $data = $this->Mglobals->getAllQR("SELECT iduserslogin, nrp, pass, nama, idpangkat, idkorps, idkomplek FROM userslogin where iduserslogin = '".$iduserslogin."';");
             echo json_encode(array(
                 "kode" => $data->iduserslogin,
                 "nrp" => $data->nrp,
@@ -156,6 +165,7 @@ class Users extends CI_Controller {
                 "pass" => $this->modul->dekrip_pass($data->pass),
                 "pangkat" => $data->idpangkat,
                 "korps" => $data->idkorps,
+                "komplek" => $data->idkomplek
             ));
         }else{
             $this->modul->halaman('login');
@@ -212,7 +222,8 @@ class Users extends CI_Controller {
                     'foto' => $newpath,
                     'idrole' => 'R2',
                     'idpangkat' => $this->input->post('pangkat'),
-                    'idkorps' => $this->input->post('korps')
+                    'idkorps' => $this->input->post('korps'),
+                    'idkomplek' => $this->input->post('komplek')
                 );
                 $kond['iduserslogin'] = $iduserslogin;
                 $update = $this->Mglobals->update("userslogin",$data,$kond);
@@ -238,7 +249,8 @@ class Users extends CI_Controller {
             'nama' => $this->input->post('nama'),
             'idrole' => 'R2',
             'idpangkat' => $this->input->post('pangkat'),
-            'idkorps' => $this->input->post('korps')
+            'idkorps' => $this->input->post('korps'),
+            'idkomplek' => $this->input->post('komplek')
         );
         $kond['iduserslogin'] = $this->input->post('kode');
         $update = $this->Mglobals->update("userslogin",$data,$kond);
@@ -304,7 +316,47 @@ class Users extends CI_Controller {
                 $data['nama_user'] = $tersimpan->nama;
                 $data['pangkat_user'] = $tersimpan->nama_pangkat;
                 $data['korps_user'] = $tersimpan->nama_korps;
-                        
+                
+                // membaca detil
+                $cek_detil = $this->Mglobals->getAllQR("select count(*) as jml from detiluser where iduserslogin = '".$tersimpan->iduserslogin."';")->jml;
+                if($cek_detil > 0){
+                    $tersimpan_detil = $this->Mglobals->getAllQR("select * from detiluser where iduserslogin = '".$tersimpan->iduserslogin."';");
+                    $data['rt'] = $tersimpan_detil->rt;
+                    $data['rw'] = $tersimpan_detil->rw;
+                    $data['jalan'] = $tersimpan_detil->jalan;
+                    $data['no'] = $tersimpan_detil->no;
+                    $data['bl'] = $tersimpan_detil->bl;
+                    $data['th'] = $tersimpan_detil->th;
+                    $data['blok'] = $tersimpan_detil->blok;
+                    $data['kesatuan'] = $tersimpan_detil->kesatuan;
+                    $data['th_penugasan'] = $tersimpan_detil->th_pem_penu;
+                    $data['asal_usul'] = $tersimpan_detil->asal_usul;
+                    $data['luas_bangunan'] = $tersimpan_detil->l_bangunan;
+                    $data['luas_tanah'] = $tersimpan_detil->l_tanah;
+                    $data['tipe'] = $tersimpan_detil->tipe;
+                    $data['b_rr_rb'] = $tersimpan_detil->b_rr_rb;
+                    $data['sewa'] = $tersimpan_detil->ketentuan_sewa;
+                    $data['keterangan'] = $tersimpan_detil->keterangan;
+                    
+                }else{
+                    $data['rt'] = "";
+                    $data['rw'] = "";
+                    $data['jalan'] = "";
+                    $data['no'] = "";
+                    $data['bl'] = "";
+                    $data['th'] = "";
+                    $data['blok'] = "";
+                    $data['kesatuan'] = "";
+                    $data['th_penugasan'] = "";
+                    $data['asal_usul'] = "";
+                    $data['luas_bangunan'] = 0;
+                    $data['luas_tanah'] = 0;
+                    $data['tipe'] = 0;
+                    $data['b_rr_rb'] = "";
+                    $data['sewa'] = "";
+                    $data['keterangan'] = "";
+                }
+                
                 $this->load->view('head', $data);
                 $this->load->view('menu');
                 $this->load->view('users/detil');
@@ -314,6 +366,175 @@ class Users extends CI_Controller {
             }
         }else{
            $this->modul->halaman('login');
+        }
+    }
+    
+    public function prosesdetil() {
+        if($this->session->userdata('logged')){
+            $cek = $this->Mglobals->getAllQR("select count(*) as jml from detiluser where iduserslogin = '".$this->input->post('key')."';")->jml;
+            if($cek > 0){
+                $status = $this->update_detil();
+            }else{
+                $status = $this->simpan_detil();
+            }
+            echo json_encode(array("status" => $status));
+        }else{
+            $this->modul->halaman('login');
+        }
+    }
+    
+    private function simpan_detil() {
+        $data = array(
+            'iddetiluser' => $this->Mglobals->autokode("D","iddetiluser","detiluser", 2, 7),
+            'iduserslogin' => $this->input->post('key'),
+            'rt' => $this->input->post('rt'),
+            'rw' => $this->input->post('rw'),
+            'jalan' => $this->input->post('jalan'),
+            'no' => $this->input->post('no'),
+            'bl' => $this->input->post('bl'),
+            'th' => $this->input->post('th'),
+            'blok' => $this->input->post('blok'),
+            'kesatuan' => $this->input->post('kesatuan'),
+            'th_pem_penu' => $this->input->post('th_penugasan'),
+            'asal_usul' => $this->input->post('asal_usul'),
+            'l_bangunan' => $this->input->post('l_bangunan'),
+            'l_tanah' => $this->input->post('l_tanah'),
+            'tipe' => $this->input->post('tipe'),
+            'b_rr_rb' => $this->input->post('b_rr_rb'),
+            'ketentuan_sewa' => $this->input->post('ketentuan_sewa'),
+            'keterangan' => $this->input->post('keterangan')
+        );
+        $simpan = $this->Mglobals->add("detiluser",$data);
+        if($simpan == 1){
+            $status = "Data tersimpan";
+        }else{
+            $status = "Data gagal tersimpan";
+        }
+        return $status;
+    }
+    
+    private function update_detil() {
+        $data = array(
+            'rt' => $this->input->post('rt'),
+            'rw' => $this->input->post('rw'),
+            'jalan' => $this->input->post('jalan'),
+            'no' => $this->input->post('no'),
+            'bl' => $this->input->post('bl'),
+            'th' => $this->input->post('th'),
+            'blok' => $this->input->post('blok'),
+            'kesatuan' => $this->input->post('kesatuan'),
+            'th_pem_penu' => $this->input->post('th_penugasan'),
+            'asal_usul' => $this->input->post('asal_usul'),
+            'l_bangunan' => $this->input->post('l_bangunan'),
+            'l_tanah' => $this->input->post('l_tanah'),
+            'tipe' => $this->input->post('tipe'),
+            'b_rr_rb' => $this->input->post('b_rr_rb'),
+            'ketentuan_sewa' => $this->input->post('ketentuan_sewa'),
+            'keterangan' => $this->input->post('keterangan')
+        );
+        $kond['iduserslogin'] = $this->input->post('key');
+        $update = $this->Mglobals->update("detiluser",$data, $kond);
+        if($update == 1){
+            $status = "Data terupdate";
+        }else{
+            $status = "Data gagal terupdate";
+        }
+        return $status;
+    }
+    
+    public function ajaxkeluarga() {
+        if($this->session->userdata('logged')){
+            $data = array();
+            $no = 1;
+            $list = $this->Mglobals->getAllQ("SELECT *, date_format(tgl_lahir, '%d %M %Y') as tgl FROM keluarga where iduserslogin = '".$this->uri->segment(3)."';");
+            foreach ($list->result() as $row) {
+                $val = array();
+                $val[] = $no;
+                $val[] = $row->nama;
+                $val[] = $row->jkel;
+                $val[] = $row->tmp_lahir.', '.$row->tgl;
+                $val[] = $row->hubungan;
+                $val[] = '<div style="text-align: center;">'
+                        . '<a class="btn btn-xs btn-outline-primary" href="javascript:void(0)" title="Edit" onclick="ganti('."'".$row->idkeluarga."'".')"> Edit</a>&nbsp;'
+                        . '<a class="btn btn-xs btn-outline-danger" href="javascript:void(0)" title="Hapus" onclick="hapus('."'".$row->idkeluarga."'".','."'".$no."'".')"> Delete</a>'
+                        . '</div>';
+                $data[] = $val;
+                $no++;
+            }
+            $output = array("data" => $data);
+            echo json_encode($output);
+        }else{
+            $this->modul->halaman('login');
+        }
+    }
+    
+    public function ajax_add_keluarga() {
+        if($this->session->userdata('logged')){
+            $data = array(
+                'idkeluarga' => $this->Mglobals->autokode("K","idkeluarga","keluarga", 2, 7),
+                'nama' => $this->input->post('nama'),
+                'jkel' => $this->input->post('jkel'),
+                'tmp_lahir' => $this->input->post('tmp'),
+                'tgl_lahir' => $this->input->post('tgl'),
+                'hubungan' => $this->input->post('hubungan'),
+                'iduserslogin' => $this->input->post('idusers')
+            );
+            $simpan = $this->Mglobals->add("keluarga",$data);
+            if($simpan == 1){
+                $status = "Data tersimpan";
+            }else{
+                $status = "Data gagal tersimpan";
+            }
+            echo json_encode(array("status" => $status));
+        }else{
+            $this->modul->halaman('login');
+        }
+    }
+    
+    public function gantikeluarga(){
+        if($this->session->userdata('logged')){
+            $kondisi['idkeluarga'] = $this->uri->segment(3);
+            $data = $this->Mglobals->get_by_id("keluarga", $kondisi);
+            echo json_encode($data);
+        }else{
+            $this->modul->halaman('login');
+        }
+    }
+    
+    public function ajax_edit_keluarga() {
+        if($this->session->userdata('logged')){
+            $data = array(
+                'nama' => $this->input->post('nama'),
+                'jkel' => $this->input->post('jkel'),
+                'tmp_lahir' => $this->input->post('tmp'),
+                'tgl_lahir' => $this->input->post('tgl'),
+                'hubungan' => $this->input->post('hubungan')
+            );
+            $kond['idkeluarga'] = $this->input->post('kode');
+            $update = $this->Mglobals->update("keluarga",$data,$kond);
+            if($update == 1){
+                $status = "Data terupdate";
+            }else{
+                $status = "Data gagal terupdate";
+            }
+            echo json_encode(array("status" => $status));
+        }else{
+            $this->modul->halaman('login');
+        }
+    }
+    
+    public function hapuskeluarga() {
+        if($this->session->userdata('logged')){
+            $kond['idkeluarga'] = $this->uri->segment(3);
+            $hapus = $this->Mglobals->delete("keluarga",$kond);
+            if($hapus == 1){
+                $status = "Data terhapus";
+            }else{
+                $status = "Data gagal terhapus";
+            }
+            echo json_encode(array("status" => $status));
+        }else{
+            $this->modul->halaman('login');
         }
     }
 }

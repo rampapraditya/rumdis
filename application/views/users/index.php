@@ -29,6 +29,7 @@
         var pass = document.getElementById('pass').value;
         var pangkat = document.getElementById('pangkat').value;
         var korps = document.getElementById('korps').value;
+        var komplek = document.getElementById('komplek').value;
         var foto = $('#foto').prop('files')[0];
         
         if (nrp === '') {
@@ -61,6 +62,12 @@
                 message: 'Pilih korps terlebih dahulu',
                 position: 'topRight'
             });
+        }else if(komplek === "-"){
+            iziToast.warning({
+                title: 'Info',
+                message: 'Pilih komplek terlebih dahulu',
+                position: 'topRight'
+            });
         } else {
             $('#btnSave').text('Saving...'); //change button text
             $('#btnSave').attr('disabled', true); //set button disable 
@@ -82,6 +89,7 @@
             form_data.append('pass', pass);
             form_data.append('pangkat', pangkat);
             form_data.append('korps', korps);
+            form_data.append('komplek', komplek);
             form_data.append('file', foto);
             
             $.ajax({
@@ -159,6 +167,9 @@
                 $('[name="nrp"]').val(data.nrp);
                 $('[name="nama"]').val(data.nama);
                 $('[name="pass"]').val(data.pass);
+                $('[name="pangkat"]').val(data.pangkat);
+                $('[name="korps"]').val(data.korps);
+                $('[name="komplek"]').val(data.komplek);
             },error: function (jqXHR, textStatus, errorThrown) {
                 
                 iziToast.error({
@@ -197,6 +208,7 @@
                                             <th style="text-align: center;">KORPS</th>
                                             <th style="text-align: center;">NRP</th>
                                             <th style="text-align: center;">NAMA</th>
+                                            <th style="text-align: center;">KOMPLEK</th>
                                             <th style="text-align: center;">AKSI</th>
                                         </tr>
                                     </thead>
@@ -273,6 +285,21 @@
                                     foreach ($korps->result() as $row) {
                                         ?>
                                     <option value="<?php echo $row->idkorps; ?>"><?php echo $row->nama_korps; ?></option>
+                                        <?php
+                                    }
+                                    ?>
+                                </select>
+                            </div>
+                        </div>
+                        <div class="form-group">
+                            <label class="control-label col-md-12">KOMPLEK</label>
+                            <div class="col-md-12">
+                                <select id="komplek" name="komplek" class="form-control">
+                                    <option value="-">- PILIH KOMPLEK -</option>
+                                    <?php
+                                    foreach ($komplek->result() as $row) {
+                                        ?>
+                                    <option value="<?php echo $row->idkomplek; ?>"><?php echo $row->nama_komplek; ?></option>
                                         <?php
                                     }
                                     ?>

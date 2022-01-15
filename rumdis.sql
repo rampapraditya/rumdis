@@ -3,7 +3,7 @@
 -- https://www.phpmyadmin.net/
 --
 -- Host: 127.0.0.1:3306
--- Generation Time: Jan 15, 2022 at 04:31 AM
+-- Generation Time: Jan 15, 2022 at 08:52 AM
 -- Server version: 5.7.31
 -- PHP Version: 7.3.21
 
@@ -33,9 +33,30 @@ CREATE TABLE IF NOT EXISTS `detiluser` (
   `iduserslogin` varchar(6) NOT NULL,
   `rt` varchar(5) DEFAULT NULL,
   `rw` varchar(5) DEFAULT NULL,
+  `jalan` varchar(150) DEFAULT NULL,
+  `no` varchar(5) DEFAULT NULL,
+  `bl` varchar(5) DEFAULT NULL,
+  `th` varchar(5) DEFAULT NULL,
+  `blok` varchar(10) DEFAULT NULL,
+  `kesatuan` varchar(30) DEFAULT NULL,
+  `th_pem_penu` varchar(4) DEFAULT NULL,
+  `asal_usul` varchar(35) DEFAULT NULL,
+  `l_bangunan` float DEFAULT '0',
+  `l_tanah` float DEFAULT '0',
+  `tipe` varchar(10) DEFAULT NULL,
+  `b_rr_rb` varchar(4) DEFAULT NULL,
+  `ketentuan_sewa` varchar(5) DEFAULT '0',
+  `keterangan` varchar(150) DEFAULT NULL,
   PRIMARY KEY (`iddetiluser`),
   KEY `FK_detiluser_key` (`iduserslogin`)
 ) ENGINE=InnoDB DEFAULT CHARSET=latin1;
+
+--
+-- Dumping data for table `detiluser`
+--
+
+INSERT INTO `detiluser` (`iddetiluser`, `iduserslogin`, `rt`, `rw`, `jalan`, `no`, `bl`, `th`, `blok`, `kesatuan`, `th_pem_penu`, `asal_usul`, `l_bangunan`, `l_tanah`, `tipe`, `b_rr_rb`, `ketentuan_sewa`, `keterangan`) VALUES
+('D00001', 'U00002', 'OO1', 'O5', 'JL JAYA WIJAYA I', '177', 'VIII', '2017', 'PA-3', 'MENART-2', '1972', 'PEMBANGUNAN', 128, 180, 'T.120', 'B', 'ya', '');
 
 -- --------------------------------------------------------
 
@@ -65,6 +86,25 @@ CREATE TABLE IF NOT EXISTS `identitas` (
 
 INSERT INTO `identitas` (`kode`, `instansi`, `tahun`, `pimpinan`, `alamat`, `kdpos`, `tlp`, `fax`, `website`, `email`, `logo`) VALUES
 ('K00001', 'TNI ANGKATAN LAUT', 1945, 'Yudo Margono', 'Komplek Militer Cilangkap, Cilangkap, Cipayung, Kota Jakarta Timur', '13870', '0218723308', '0218710628', 'https://www.tnial.mil.id/', 'rampapraditya@gmail.com', './assets/img/fe26482c6e591a85e6c9bc9a664f8895.png');
+
+-- --------------------------------------------------------
+
+--
+-- Table structure for table `keluarga`
+--
+
+DROP TABLE IF EXISTS `keluarga`;
+CREATE TABLE IF NOT EXISTS `keluarga` (
+  `idkeluarga` varchar(6) NOT NULL,
+  `iduserslogin` varchar(6) NOT NULL,
+  `nama` varchar(45) NOT NULL,
+  `jkel` varchar(45) NOT NULL,
+  `tmp_lahir` varchar(45) NOT NULL,
+  `tgl_lahir` date NOT NULL,
+  `hubungan` varchar(45) NOT NULL,
+  PRIMARY KEY (`idkeluarga`),
+  KEY `FK_keluarga_key` (`iduserslogin`)
+) ENGINE=InnoDB DEFAULT CHARSET=latin1;
 
 -- --------------------------------------------------------
 
@@ -223,6 +263,7 @@ CREATE TABLE IF NOT EXISTS `userslogin` (
   `idrole` varchar(2) NOT NULL,
   `idpangkat` varchar(6) NOT NULL,
   `idkorps` varchar(6) NOT NULL,
+  `idkomplek` varchar(6) NOT NULL,
   PRIMARY KEY (`iduserslogin`),
   KEY `FK_userslogin_role` (`idrole`),
   KEY `FK_userslogin_pangkat` (`idpangkat`),
@@ -233,8 +274,9 @@ CREATE TABLE IF NOT EXISTS `userslogin` (
 -- Dumping data for table `userslogin`
 --
 
-INSERT INTO `userslogin` (`iduserslogin`, `nrp`, `pass`, `nama`, `foto`, `idrole`, `idpangkat`, `idkorps`) VALUES
-('U00001', 'ADMIN', 'aGtq', 'ADMINISTRATOR', '', 'R1', 'P00001', 'K00001');
+INSERT INTO `userslogin` (`iduserslogin`, `nrp`, `pass`, `nama`, `foto`, `idrole`, `idpangkat`, `idkorps`, `idkomplek`) VALUES
+('U00001', 'ADMIN', 'aGtq', 'ADMINISTRATOR', '', 'R1', 'P00001', 'K00001', ''),
+('U00002', '15040/P', 'aGtq', 'LAODE JIMMY HR', '', 'R2', 'P00012', 'K00008', 'K00002');
 
 --
 -- Constraints for dumped tables
@@ -245,6 +287,12 @@ INSERT INTO `userslogin` (`iduserslogin`, `nrp`, `pass`, `nama`, `foto`, `idrole
 --
 ALTER TABLE `detiluser`
   ADD CONSTRAINT `FK_detiluser_key` FOREIGN KEY (`iduserslogin`) REFERENCES `userslogin` (`iduserslogin`) ON DELETE CASCADE ON UPDATE CASCADE;
+
+--
+-- Constraints for table `keluarga`
+--
+ALTER TABLE `keluarga`
+  ADD CONSTRAINT `FK_keluarga_key` FOREIGN KEY (`iduserslogin`) REFERENCES `userslogin` (`iduserslogin`) ON DELETE CASCADE ON UPDATE CASCADE;
 
 --
 -- Constraints for table `userslogin`

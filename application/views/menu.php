@@ -9,7 +9,7 @@
         <ul class="sidebar-menu">
             <li class="menu-header">MENU</li>
             <li class="dropdown <?php if($menu == 'welcome' || $menu == 'identitas' || $menu == 'changepass'){ echo 'active'; } ?>">
-                <a href="#" class="nav-link has-dropdown" data-toggle="dropdown"><i class="fas fa-laptop"></i> <span>Setting</span></a>
+                <a href="#" class="nav-link has-dropdown" data-toggle="dropdown"><i class="fas fa-laptop"></i> <span>Dashboard</span></a>
                 <ul class="dropdown-menu">
                     <li class="<?php if($menu == 'welcome'){ echo 'active'; } ?>"><a class="nav-link" href="<?php echo base_url(); ?>welcome">Home</a></li>
                     <li class="<?php if($menu == 'identitas'){ echo 'active'; } ?>"><a class="nav-link" href="<?php echo base_url(); ?>identitas">Identitas</a></li>
