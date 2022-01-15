@@ -17,6 +17,8 @@ class Users extends CI_Controller {
             $data['username'] = $ses['iduser'];
             $data['nrp'] = $ses['nrp'];
             $data['nama'] = $ses['nama'];
+            $data['pangkat'] = $this->Mglobals->getAllQ("select * from pangkat where nama_pangkat <> 'ADMINISTRATOR';");
+            $data['korps'] = $this->Mglobals->getAll("korps");
             
             $this->load->view('head', $data);
             $this->load->view('menu');
@@ -30,7 +32,7 @@ class Users extends CI_Controller {
     public function ajaxlist() {
         if($this->session->userdata('logged')){
             $data = array();
-            $list = $this->Mglobals->getAllQ("SELECT * FROM userslogin where idrole = 'R2';");
+            $list = $this->Mglobals->getAllQ("SELECT *, b.nama_pangkat, c.nama_korps FROM userslogin a, pangkat b, korps c where a.idpangkat = b.idpangkat and a.idkorps = c.idkorps and a.idrole = 'R2';");
             foreach ($list->result() as $row) {
                 $val = array();
                 $def = base_url().'assets/img/avatar.png';
@@ -39,12 +41,15 @@ class Users extends CI_Controller {
                         $def = base_url().substr($row->foto, 2);
                     }
                 }
-                $val[] = '<img src="'.$def.'" class="img-thumbnail" style="width: 70px; height: auto;">';
+                $val[] = '<img src="'.$def.'" class="img-thumbnail" style="width: 50px; height: auto;">';
+                $val[] = $row->nama_pangkat;
+                $val[] = $row->nama_korps;
                 $val[] = $row->nrp;
                 $val[] = $row->nama;
                 $val[] = '<div style="text-align: center;">'
                         . '<a class="btn btn-xs btn-outline-primary" href="javascript:void(0)" title="Edit" onclick="ganti('."'".$row->iduserslogin."'".')"> Edit</a>&nbsp;'
-                        . '<a class="btn btn-xs btn-outline-danger" href="javascript:void(0)" title="Hapus" onclick="hapus('."'".$row->iduserslogin."'".','."'".$row->nrp."'".')"> Delete</a>'
+                        . '<a class="btn btn-xs btn-outline-danger" href="javascript:void(0)" title="Hapus" onclick="hapus('."'".$row->iduserslogin."'".','."'".$row->nrp."'".')"> Delete</a>&nbsp;'
+                        . '<a class="btn btn-xs btn-outline-success" href="javascript:void(0)" title="Detil" onclick="detil('."'".$this->modul->enkrip_url($row->iduserslogin)."'".')"> Detil</a>'
                         . '</div>';
                 $data[] = $val;
             }
@@ -100,7 +105,9 @@ class Users extends CI_Controller {
                     'pass' => $this->modul->enkrip_pass($this->input->post('pass')),
                     'nama' => $this->input->post('nama'),
                     'foto' => $newpath,
-                    'idrole' => 'R2'
+                    'idrole' => 'R2',
+                    'idpangkat' => $this->input->post('pangkat'),
+                    'idkorps' => $this->input->post('korps')
                 );
                 $simpan = $this->Mglobals->add("userslogin",$data);
                 if($simpan == 1){
@@ -125,7 +132,9 @@ class Users extends CI_Controller {
             'pass' => $this->modul->enkrip_pass($this->input->post('pass')),
             'nama' => $this->input->post('nama'),
             'foto' => '',
-            'idrole' => 'R2'
+            'idrole' => 'R2',
+            'idpangkat' => $this->input->post('pangkat'),
+            'idkorps' => $this->input->post('korps')
         );
         $simpan = $this->Mglobals->add("userslogin",$data);
         if($simpan == 1){
@@ -139,12 +148,14 @@ class Users extends CI_Controller {
     public function ganti(){
         if($this->session->userdata('logged')){
             $iduserslogin = $this->uri->segment(3);
-            $data = $this->Mglobals->getAllQR("SELECT iduserslogin, nrp, pass, nama FROM userslogin where iduserslogin = '".$iduserslogin."';");
+            $data = $this->Mglobals->getAllQR("SELECT iduserslogin, nrp, pass, nama, idpangkat, idkorps FROM userslogin where iduserslogin = '".$iduserslogin."';");
             echo json_encode(array(
                 "kode" => $data->iduserslogin,
                 "nrp" => $data->nrp,
                 "nama" => $data->nama,
-                "pass" => $this->modul->dekrip_pass($data->pass)
+                "pass" => $this->modul->dekrip_pass($data->pass),
+                "pangkat" => $data->idpangkat,
+                "korps" => $data->idkorps,
             ));
         }else{
             $this->modul->halaman('login');
@@ -199,7 +210,9 @@ class Users extends CI_Controller {
                     'pass' => $this->modul->enkrip_pass($this->input->post('pass')),
                     'nama' => $this->input->post('nama'),
                     'foto' => $newpath,
-                    'idrole' => 'R2'
+                    'idrole' => 'R2',
+                    'idpangkat' => $this->input->post('pangkat'),
+                    'idkorps' => $this->input->post('korps')
                 );
                 $kond['iduserslogin'] = $iduserslogin;
                 $update = $this->Mglobals->update("userslogin",$data,$kond);
@@ -223,7 +236,9 @@ class Users extends CI_Controller {
             'nrp' => $this->input->post('nrp'),
             'pass' => $this->modul->enkrip_pass($this->input->post('pass')),
             'nama' => $this->input->post('nama'),
-            'idrole' => 'R2'
+            'idrole' => 'R2',
+            'idpangkat' => $this->input->post('pangkat'),
+            'idkorps' => $this->input->post('korps')
         );
         $kond['iduserslogin'] = $this->input->post('kode');
         $update = $this->Mglobals->update("userslogin",$data,$kond);
@@ -272,5 +287,33 @@ class Users extends CI_Controller {
         $hasil = $this->image_lib->resize();
         $this->image_lib->clear();
         return $hasil;
+    }
+    
+    public function detil() {
+        if($this->session->userdata('logged')){
+            $ses = $this->session->userdata('logged');
+            $data['username'] = $ses['iduser'];
+            $data['nrp'] = $ses['nrp'];
+            $data['nama'] = $ses['nama'];
+            $idusr = $this->modul->dekrip_url($this->uri->segment(3));
+            $cek = $this->Mglobals->getAllQR("select count(*) as jml from userslogin where iduserslogin = '".$idusr."';")->jml;
+            if($cek > 0){
+                $tersimpan = $this->Mglobals->getAllQR("select a.iduserslogin, a.nrp, a.nama, b.nama_pangkat, c.nama_korps FROM userslogin a, pangkat b, korps c where a.idpangkat = b.idpangkat and a.idkorps = c.idkorps and a.iduserslogin = '".$idusr."';");
+                $data['iduser'] = $tersimpan->iduserslogin;
+                $data['nrp_user'] = $tersimpan->nrp;
+                $data['nama_user'] = $tersimpan->nama;
+                $data['pangkat_user'] = $tersimpan->nama_pangkat;
+                $data['korps_user'] = $tersimpan->nama_korps;
+                        
+                $this->load->view('head', $data);
+                $this->load->view('menu');
+                $this->load->view('users/detil');
+                $this->load->view('foot');
+            }else{
+                $this->modul->halaman('users');
+            }
+        }else{
+           $this->modul->halaman('login');
+        }
     }
 }

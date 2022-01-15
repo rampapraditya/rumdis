@@ -27,6 +27,8 @@
         var nrp = document.getElementById('nrp').value;
         var nama = document.getElementById('nama').value;
         var pass = document.getElementById('pass').value;
+        var pangkat = document.getElementById('pangkat').value;
+        var korps = document.getElementById('korps').value;
         var foto = $('#foto').prop('files')[0];
         
         if (nrp === '') {
@@ -45,6 +47,18 @@
             iziToast.warning({
                 title: 'Info',
                 message: 'Password tidak boleh kosong',
+                position: 'topRight'
+            });
+        }else if(pangkat === "-"){
+            iziToast.warning({
+                title: 'Info',
+                message: 'Pilih pangkat terlebih dahulu',
+                position: 'topRight'
+            });
+        }else if(korps === "-"){
+            iziToast.warning({
+                title: 'Info',
+                message: 'Pilih korps terlebih dahulu',
                 position: 'topRight'
             });
         } else {
@@ -66,6 +80,8 @@
             form_data.append('nrp', nrp);            
             form_data.append('nama', nama);
             form_data.append('pass', pass);
+            form_data.append('pangkat', pangkat);
+            form_data.append('korps', korps);
             form_data.append('file', foto);
             
             $.ajax({
@@ -153,6 +169,10 @@
             }
         });
     }
+    
+    function detil(kode){
+        window.location.href = "<?php echo base_url(); ?>users/detil/" + kode;
+    }
 
 </script>
 
@@ -173,6 +193,8 @@
                                     <thead>                                 
                                         <tr>
                                             <th style="text-align: center;">FOTO</th>
+                                            <th style="text-align: center;">PANGKAT</th>
+                                            <th style="text-align: center;">KORPS</th>
                                             <th style="text-align: center;">NRP</th>
                                             <th style="text-align: center;">NAMA</th>
                                             <th style="text-align: center;">AKSI</th>
@@ -225,6 +247,36 @@
                             <label class="control-label col-md-12">PASSWORD</label>
                             <div class="col-md-12">
                                 <input id="pass" name="pass" class="form-control" type="password" autocomplete="off">
+                            </div>
+                        </div>
+                        <div class="form-group">
+                            <label class="control-label col-md-12">PANGKAT</label>
+                            <div class="col-md-12">
+                                <select id="pangkat" name="pangkat" class="form-control">
+                                    <option value="-">- PILIH PANGKAT -</option>
+                                    <?php
+                                    foreach ($pangkat->result() as $row) {
+                                        ?>
+                                    <option value="<?php echo $row->idpangkat; ?>"><?php echo $row->nama_pangkat; ?></option>
+                                        <?php
+                                    }
+                                    ?>
+                                </select>
+                            </div>
+                        </div>
+                        <div class="form-group">
+                            <label class="control-label col-md-12">KORPS</label>
+                            <div class="col-md-12">
+                                <select id="korps" name="korps" class="form-control">
+                                    <option value="-">- PILIH KORPS -</option>
+                                    <?php
+                                    foreach ($korps->result() as $row) {
+                                        ?>
+                                    <option value="<?php echo $row->idkorps; ?>"><?php echo $row->nama_korps; ?></option>
+                                        <?php
+                                    }
+                                    ?>
+                                </select>
                             </div>
                         </div>
                     </div>

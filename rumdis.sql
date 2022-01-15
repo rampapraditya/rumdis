@@ -3,7 +3,7 @@
 -- https://www.phpmyadmin.net/
 --
 -- Host: 127.0.0.1:3306
--- Generation Time: Jan 12, 2022 at 01:39 PM
+-- Generation Time: Jan 15, 2022 at 04:31 AM
 -- Server version: 5.7.31
 -- PHP Version: 7.3.21
 
@@ -20,6 +20,22 @@ SET time_zone = "+00:00";
 --
 -- Database: `rumdis`
 --
+
+-- --------------------------------------------------------
+
+--
+-- Table structure for table `detiluser`
+--
+
+DROP TABLE IF EXISTS `detiluser`;
+CREATE TABLE IF NOT EXISTS `detiluser` (
+  `iddetiluser` varchar(6) NOT NULL,
+  `iduserslogin` varchar(6) NOT NULL,
+  `rt` varchar(5) DEFAULT NULL,
+  `rw` varchar(5) DEFAULT NULL,
+  PRIMARY KEY (`iddetiluser`),
+  KEY `FK_detiluser_key` (`iduserslogin`)
+) ENGINE=InnoDB DEFAULT CHARSET=latin1;
 
 -- --------------------------------------------------------
 
@@ -73,7 +89,8 @@ INSERT INTO `komplek` (`idkomplek`, `nama_komplek`, `lat`, `lon`) VALUES
 ('K00001', 'Komplek Sunter', '-6.163251', '106.885772'),
 ('K00002', 'Komplek Cilandak (PERWIRA)', '-6.30112526873089', '106.81249544440927'),
 ('K00003', 'Komplek Cilandak (BINTARA)', '-6.300760', '106.812769'),
-('K00004', 'Komplek Cilandak (TAMTAMA)', '-6.304796', '106.809967');
+('K00004', 'Komplek Cilandak (TAMTAMA)', '-6.304796', '106.809967'),
+('K00005', 'Bambe', '-7.35209140', '112.64637060');
 
 -- --------------------------------------------------------
 
@@ -207,7 +224,9 @@ CREATE TABLE IF NOT EXISTS `userslogin` (
   `idpangkat` varchar(6) NOT NULL,
   `idkorps` varchar(6) NOT NULL,
   PRIMARY KEY (`iduserslogin`),
-  KEY `FK_userslogin_role` (`idrole`)
+  KEY `FK_userslogin_role` (`idrole`),
+  KEY `FK_userslogin_pangkat` (`idpangkat`),
+  KEY `FK_userslogin_korps` (`idkorps`)
 ) ENGINE=InnoDB DEFAULT CHARSET=latin1;
 
 --
@@ -215,19 +234,24 @@ CREATE TABLE IF NOT EXISTS `userslogin` (
 --
 
 INSERT INTO `userslogin` (`iduserslogin`, `nrp`, `pass`, `nama`, `foto`, `idrole`, `idpangkat`, `idkorps`) VALUES
-('U00001', 'ADMIN', 'aGtq', 'ADMINISTRATOR', '', 'R1', 'P00001', ''),
-('U00002', '111', 'aGtq', 'Rampa Praditya', './assets/img/3f627fb11cbc3b6e0050208ad95cad41.PNG', 'R2', 'P00001', ''),
-('U00003', '222', 'aGtq', 'Dinda', './assets/img/c1292bc7dcd9a04325f6f8750bfcf72a.jpg', 'R2', 'P00001', ''),
-('U00004', '333', 'aGtq', 'Atika', './assets/img/7d82164b1e635bbac9a0b4167d978bc2.PNG', 'R2', 'P00001', '');
+('U00001', 'ADMIN', 'aGtq', 'ADMINISTRATOR', '', 'R1', 'P00001', 'K00001');
 
 --
 -- Constraints for dumped tables
 --
 
 --
+-- Constraints for table `detiluser`
+--
+ALTER TABLE `detiluser`
+  ADD CONSTRAINT `FK_detiluser_key` FOREIGN KEY (`iduserslogin`) REFERENCES `userslogin` (`iduserslogin`) ON DELETE CASCADE ON UPDATE CASCADE;
+
+--
 -- Constraints for table `userslogin`
 --
 ALTER TABLE `userslogin`
+  ADD CONSTRAINT `FK_userslogin_korps` FOREIGN KEY (`idkorps`) REFERENCES `korps` (`idkorps`) ON DELETE CASCADE ON UPDATE CASCADE,
+  ADD CONSTRAINT `FK_userslogin_pangkat` FOREIGN KEY (`idpangkat`) REFERENCES `pangkat` (`idpangkat`) ON DELETE CASCADE ON UPDATE CASCADE,
   ADD CONSTRAINT `FK_userslogin_role` FOREIGN KEY (`idrole`) REFERENCES `role` (`idrole`) ON DELETE CASCADE ON UPDATE CASCADE;
 COMMIT;
 
