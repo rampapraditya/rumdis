@@ -3,7 +3,7 @@
 -- https://www.phpmyadmin.net/
 --
 -- Host: 127.0.0.1:3306
--- Generation Time: Jan 15, 2022 at 08:52 AM
+-- Generation Time: Jan 16, 2022 at 03:28 AM
 -- Server version: 5.7.31
 -- PHP Version: 7.3.21
 
@@ -56,7 +56,8 @@ CREATE TABLE IF NOT EXISTS `detiluser` (
 --
 
 INSERT INTO `detiluser` (`iddetiluser`, `iduserslogin`, `rt`, `rw`, `jalan`, `no`, `bl`, `th`, `blok`, `kesatuan`, `th_pem_penu`, `asal_usul`, `l_bangunan`, `l_tanah`, `tipe`, `b_rr_rb`, `ketentuan_sewa`, `keterangan`) VALUES
-('D00001', 'U00002', 'OO1', 'O5', 'JL JAYA WIJAYA I', '177', 'VIII', '2017', 'PA-3', 'MENART-2', '1972', 'PEMBANGUNAN', 128, 180, 'T.120', 'B', 'ya', '');
+('D00001', 'U00002', 'OO1', 'O5', 'JL JAYA WIJAYA I', '177', 'VIII', '2017', 'PA-3', 'MENART-2', '1972', 'PEMBANGUNAN', 128, 180, 'T.120', 'B', 'ya', ''),
+('D00002', 'U00003', '05', '01', 'Pondok Jati AE 14', '11', '02', '08', 'AE', 'TNI', '2007', 'Pembangunan', 600, 1500, '55', 'B', 'tidak', '-');
 
 -- --------------------------------------------------------
 
@@ -105,6 +106,13 @@ CREATE TABLE IF NOT EXISTS `keluarga` (
   PRIMARY KEY (`idkeluarga`),
   KEY `FK_keluarga_key` (`iduserslogin`)
 ) ENGINE=InnoDB DEFAULT CHARSET=latin1;
+
+--
+-- Dumping data for table `keluarga`
+--
+
+INSERT INTO `keluarga` (`idkeluarga`, `iduserslogin`, `nama`, `jkel`, `tmp_lahir`, `tgl_lahir`, `hubungan`) VALUES
+('K00001', 'U00003', 'Atika', 'Perempuan', 'Sidoarjo', '2022-01-16', 'ISTRI');
 
 -- --------------------------------------------------------
 
@@ -250,6 +258,29 @@ INSERT INTO `role` (`idrole`, `nama_role`) VALUES
 -- --------------------------------------------------------
 
 --
+-- Table structure for table `sip`
+--
+
+DROP TABLE IF EXISTS `sip`;
+CREATE TABLE IF NOT EXISTS `sip` (
+  `idsip` varchar(6) NOT NULL,
+  `iduserslogin` varchar(6) NOT NULL,
+  `no_sip` varchar(45) NOT NULL,
+  `dok_sip` varchar(150) NOT NULL,
+  PRIMARY KEY (`idsip`),
+  KEY `FK_sip_key` (`iduserslogin`)
+) ENGINE=InnoDB DEFAULT CHARSET=latin1;
+
+--
+-- Dumping data for table `sip`
+--
+
+INSERT INTO `sip` (`idsip`, `iduserslogin`, `no_sip`, `dok_sip`) VALUES
+('S00001', 'U00003', 'SIP012', './assets/file/62839a525e681a9158bc4b92d57abb2b.pdf');
+
+-- --------------------------------------------------------
+
+--
 -- Table structure for table `userslogin`
 --
 
@@ -276,7 +307,8 @@ CREATE TABLE IF NOT EXISTS `userslogin` (
 
 INSERT INTO `userslogin` (`iduserslogin`, `nrp`, `pass`, `nama`, `foto`, `idrole`, `idpangkat`, `idkorps`, `idkomplek`) VALUES
 ('U00001', 'ADMIN', 'aGtq', 'ADMINISTRATOR', '', 'R1', 'P00001', 'K00001', ''),
-('U00002', '15040/P', 'aGtq', 'LAODE JIMMY HR', '', 'R2', 'P00012', 'K00008', 'K00002');
+('U00002', '15040/P', 'aGtq', 'LAODE JIMMY HR', '', 'R2', 'P00012', 'K00008', 'K00002'),
+('U00003', '111', 'aGtq', 'Rampa Praditya', './assets/img/3f1b9bc7eb1af46592288464ee367259.png', 'R2', 'P00010', 'K00001', 'K00005');
 
 --
 -- Constraints for dumped tables
@@ -293,6 +325,12 @@ ALTER TABLE `detiluser`
 --
 ALTER TABLE `keluarga`
   ADD CONSTRAINT `FK_keluarga_key` FOREIGN KEY (`iduserslogin`) REFERENCES `userslogin` (`iduserslogin`) ON DELETE CASCADE ON UPDATE CASCADE;
+
+--
+-- Constraints for table `sip`
+--
+ALTER TABLE `sip`
+  ADD CONSTRAINT `FK_sip_key` FOREIGN KEY (`iduserslogin`) REFERENCES `userslogin` (`iduserslogin`) ON DELETE CASCADE ON UPDATE CASCADE;
 
 --
 -- Constraints for table `userslogin`

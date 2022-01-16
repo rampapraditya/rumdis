@@ -17,20 +17,12 @@
                 </ul>
             </li>
             <li class="dropdown <?php if($menu == 'korps' || $menu == 'pangkat' || $menu == 'users' || $menu == 'komplek' ){ echo 'active'; } ?>">
-                <a href="#" class="nav-link has-dropdown" data-toggle="dropdown"><i class="fas fa-database"></i> <span>Master</span></a>
+                <a href="#" class="nav-link has-dropdown" data-toggle="dropdown"><i class="fas fa-database"></i> <span>Data</span></a>
                 <ul class="dropdown-menu">
                     <li class="<?php if($menu == 'korps'){ echo 'active'; } ?>"><a class="nav-link" href="<?php echo base_url(); ?>korps">Korps</a></li>
                     <li class="<?php if($menu == 'pangkat'){ echo 'active'; } ?>"><a class="nav-link" href="<?php echo base_url(); ?>pangkat">Pangkat</a></li>
                     <li class="<?php if($menu == 'komplek'){ echo 'active'; } ?>"><a class="nav-link" href="<?php echo base_url(); ?>komplek">Komplek</a></li>
                     <li class="<?php if($menu == 'users'){ echo 'active'; } ?>"><a class="nav-link" href="<?php echo base_url(); ?>users">Users</a></li>
-                </ul>
-            </li>
-            <li class="dropdown <?php if($menu == 'sip' || $menu == "rumahdinas" || $menu == "personil"){ echo 'active'; } ?>">
-                <a href="#" class="nav-link has-dropdown" data-toggle="dropdown"><i class="fas fa-pen"></i> <span>Transaksi</span></a>
-                <ul class="dropdown-menu">
-                    <li class="<?php if($menu == 'rumahdinas'){ echo 'active'; } ?>"><a class="nav-link" href="<?php echo base_url(); ?>rumahdinas">Rumah Dinas</a></li>
-                    <li class="<?php if($menu == 'personil'){ echo 'active'; } ?>"><a class="nav-link" href="<?php echo base_url(); ?>personil">Data Penghuni</a></li>
-                    <li class="<?php if($menu == 'sip'){ echo 'active'; } ?>"><a class="nav-link" href="<?php echo base_url(); ?>sip">SIP</a></li>
                 </ul>
             </li>
         </ul>

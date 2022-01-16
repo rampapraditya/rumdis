@@ -79,12 +79,13 @@
         }
 
         function createMarker(coords, nama_marker, id, url_icon, w, h) {
+            
             var busIcon = L.icon({
                 iconUrl: url_icon,
                 iconSize: [w, h] // size of the icon
             });
 
-            var popupContent = '<p style="text-align: center;">' + nama_marker + '</p>';
+            var popupContent = '<a href="<?php echo base_url(); ?>users/index/'+id+'"><p style="text-align: center;">' + nama_marker + '</p></a>';
 
             myMarker = L.marker(coords, {
                 draggable: false,

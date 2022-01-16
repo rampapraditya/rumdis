@@ -5,13 +5,28 @@
 
     $(document).ready(function () {
         table = $('#tb').DataTable({
-            ajax: "<?php echo base_url(); ?>users/ajaxlist",
+            ajax: "<?php echo base_url(); ?>users/ajaxlist/<?php echo $idkomplek_lemparan; ?>",
             ordering:false
         });
     });
 
     function reload() {
         table.ajax.reload(null, false); //reload datatable ajax
+    }
+    
+    function pilihkomplek(){
+        var komplek_head = document.getElementById('komplek_head').value;
+        table = $('#tb').DataTable({
+            ajax: "<?php echo base_url(); ?>users/ajaxlist/" + komplek_head,
+            ordering:false,
+            retrieve:true
+        });
+        table.destroy();
+        table = $('#tb').DataTable({
+            ajax: "<?php echo base_url(); ?>users/ajaxlist/" + komplek_head,
+            ordering:false,
+            retrieve:true
+        });
     }
 
     function add() {
@@ -197,8 +212,30 @@
                 <div class="col-12">
                     <div class="card">
                         <div class="card-body">
-                            <button class="btn  btn-outline-success" onclick="add();">Add Data </button>
-                            <button class="btn btn-outline-secondary" style="margin-left: 5px;" onclick="reload();">Reload</button>    
+                            <div class="row">
+                                <div class="col-md-8">
+                                    <button class="btn  btn-outline-success" onclick="add();">Add Data </button>
+                                    <button class="btn btn-outline-secondary" style="margin-left: 5px;" onclick="reload();">Reload</button>    
+                                </div>
+                                <div class="col-md-4">
+                                    <select id="komplek_head" name="komplek_head" class="form-control pull-right" onchange="pilihkomplek()">
+                                        <option value="" <?php if($idkomplek_lemparan == ""){ echo 'selected'; } ?> >- PILIH KOMPLEK -</option>
+                                        <?php
+                                        foreach ($komplek->result() as $row) {
+                                            if($row->idkomplek == $idkomplek_lemparan){
+                                                ?>
+                                        <option selected value="<?php echo $row->idkomplek; ?>"><?php echo $row->nama_komplek; ?></option>
+                                                <?php
+                                            }else{
+                                                ?>
+                                        <option value="<?php echo $row->idkomplek; ?>"><?php echo $row->nama_komplek; ?></option>
+                                                <?php
+                                            }
+                                        }
+                                        ?>
+                                    </select>
+                                </div>
+                            </div>
                             <div class="table-responsive" style="margin-top: 20px;">
                                 <table id="tb" class="table table-striped" style="width: 100%;">
                                     <thead>                                 

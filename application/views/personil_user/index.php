@@ -1,7 +1,7 @@
 <script type="text/javascript">
 
     $(document).ready(function () {
-        
+
     });
 
     function simpan() {
@@ -9,52 +9,51 @@
         var nama = document.getElementById('nama').value;
         var pangkat = document.getElementById('pangkat').value;
         var korps = document.getElementById('korps').value;
-        var status = document.getElementById('status').value;
+        var komplek = document.getElementById('komplek').value;
         var foto = $('#foto').prop('files')[0];
-        
+
         if (nrp === "") {
             iziToast.warning({
                 title: 'Info',
                 message: 'NRP tidak boleh kosong',
                 position: 'topRight'
             });
-        }else if(nama === ""){
+        } else if (nama === "") {
             iziToast.warning({
                 title: 'Info',
                 message: 'Nama tidak boleh kosong',
                 position: 'topRight'
             });
-        }else if(pangkat === "-"){
+        } else if (pangkat === "-") {
             iziToast.warning({
                 title: 'Info',
                 message: 'Pilih pangkat terlebih dahulu',
                 position: 'topRight'
             });
-        }else if(korps === "-"){
+        } else if (korps === "-") {
             iziToast.warning({
                 title: 'Info',
                 message: 'Pilih korps terlebih dahulu',
                 position: 'topRight'
             });
-        }else if(status === "-"){
+        } else if (komplek === "-") {
             iziToast.warning({
                 title: 'Info',
-                message: 'Pilih status terlebih dahulu',
+                message: 'Pilih komplek terlebih dahulu',
                 position: 'topRight'
             });
-            
         } else {
             $('#btnSave').text('Saving...');
             $('#btnSave').attr('disabled', true);
-            
+
             var form_data = new FormData();
             form_data.append('nrp', nrp);
             form_data.append('nama', nama);
             form_data.append('korps', korps);
             form_data.append('pangkat', pangkat);
-            form_data.append('status', status);
+            form_data.append('komplek', komplek);
             form_data.append('file', foto);
-            
+
             $.ajax({
                 url: "<?php echo base_url(); ?>profileuser/proses",
                 dataType: 'JSON',
@@ -69,12 +68,12 @@
                         message: response.status,
                         position: 'topRight'
                     });
-                    
-                    $('#btnSave').text('Save');
-                    $('#btnSave').attr('disabled',false);
 
-                },error: function (response) {
-                    
+                    $('#btnSave').text('Save');
+                    $('#btnSave').attr('disabled', false);
+
+                }, error: function (response) {
+
                     iziToast.success({
                         title: 'Info',
                         message: response.status,
@@ -82,10 +81,10 @@
                     });
 
                     $('#btnSave').text('Save');
-                    $('#btnSave').attr('disabled',false);
+                    $('#btnSave').attr('disabled', false);
                 }
             });
-            
+
         }
     }
 
@@ -94,14 +93,21 @@
 <div class="main-content">
     <section class="section">
         <div class="section-header">
-            <h1>MASTER PERSONIL</h1>
+            <h1>PROFILE</h1>
         </div>
         <div class="section-body">
-            <div class="row">
-                <div class="col-12">
+            <nav>
+                <div class="nav nav-tabs nav-fill" id="nav-tab" role="tablist">
+                    <a class="nav-item nav-link active" id="nav_tab_diri" data-toggle="tab" href="#nav_diri" role="tab" aria-controls="nav_diri" aria-selected="true">Identitas Diri</a>
+                    <a class="nav-item nav-link" id="nav_tab_keluarga" data-toggle="tab" href="#nav_keluarga" role="tab" aria-controls="nav_keluarga" aria-selected="false">Keluarga</a>
+                    <a class="nav-item nav-link" id="nav_tab_sip" data-toggle="tab" href="#nav_sip" role="tab" aria-controls="nav_sip" aria-selected="false">SIP</a>
+                </div>
+            </nav>
+            <div class="tab-content" id="nav-tabContent" style="background-color: white;">
+                <div class="tab-pane fade show active" id="nav_diri" role="tabpanel" aria-labelledby="nav_diri" style="background-color: white;">
                     <div class="card">
                         <div class="card-body">
-                            <form id="form">
+                            <div class="form-horizontal" style="margin-top: 10px;">
                                 <div class="form-group">
                                     <label>NRP</label>
                                     <input id="nrp" name="nrp" class="form-control" type="text" autocomplete="off" readonly value="<?php echo $nrp; ?>">
@@ -116,13 +122,13 @@
                                         <option value="-">- PILIH PANGKAT -</option>
                                         <?php
                                         foreach ($pangkat->result() as $row) {
-                                            if($row->idpangkat == $pangkat_personil){
+                                            if ($row->idpangkat == $pangkat_personil) {
                                                 ?>
-                                        <option selected value="<?php echo $row->idpangkat; ?>"><?php echo $row->nama_pangkat; ?></option>
+                                                <option selected value="<?php echo $row->idpangkat; ?>"><?php echo $row->nama_pangkat; ?></option>
                                                 <?php
-                                            }else{
+                                            } else {
                                                 ?>
-                                        <option value="<?php echo $row->idpangkat; ?>"><?php echo $row->nama_pangkat; ?></option>
+                                                <option value="<?php echo $row->idpangkat; ?>"><?php echo $row->nama_pangkat; ?></option>
                                                 <?php
                                             }
                                         }
@@ -135,38 +141,54 @@
                                         <option value="-">- PILIH KORPS -</option>
                                         <?php
                                         foreach ($korps->result() as $row) {
-                                            if($row->idkorps == $korps_personil){
+                                            if ($row->idkorps == $korps_personil) {
                                                 ?>
-                                        <option selected value="<?php echo $row->idkorps; ?>"><?php echo $row->nama_korps; ?></option>
+                                                <option selected value="<?php echo $row->idkorps; ?>"><?php echo $row->nama_korps; ?></option>
                                                 <?php
-                                            }else{
+                                            } else {
                                                 ?>
-                                        <option value="<?php echo $row->idkorps; ?>"><?php echo $row->nama_korps; ?></option>
+                                                <option value="<?php echo $row->idkorps; ?>"><?php echo $row->nama_korps; ?></option>
                                                 <?php
                                             }
-                                            
                                         }
                                         ?>
                                     </select>
                                 </div>
                                 <div class="form-group">
-                                    <label>STATUS</label>
-                                    <select id="status" name="status" class="form-control">
-                                        <option value="-">- PILIH STATUS -</option>
-                                        <option <?php  if($status_personil == "AKTIF"){ echo "selected"; } ?> value="AKTIF">AKTIF</option>
-                                        <option <?php  if($status_personil == "PURNAWIRAWAN"){ echo "selected"; } ?> value="PURNAWIRAWAN">PURNAWIRAWAN</option>
+                                    <label>KOMPLEK</label>
+                                    <select id="komplek" name="komplek" class="form-control">
+                                        <option value="-">- PILIH KOMPLEK -</option>
+                                        <?php
+                                        foreach ($komplek->result() as $row) {
+                                            if ($row->idkomplek == $komplek_personil) {
+                                                ?>
+                                                <option selected value="<?php echo $row->idkomplek; ?>"><?php echo $row->nama_komplek; ?></option>
+                                                <?php
+                                            } else {
+                                                ?>
+                                                <option value="<?php echo $row->idkomplek; ?>"><?php echo $row->nama_komplek; ?></option>
+                                                <?php
+                                            }
+                                        }
+                                        ?>
                                     </select>
                                 </div>
                                 <div class="form-group">
                                     <label>FOTO</label>
                                     <input type="file" class="form-control" id="foto" name="foto">
                                 </div>
-                            </form>
+                            </div>
                         </div>
                         <div class="card-footer with-border">
                             <button id="btnSave" type="button" onclick="simpan();" class="btn btn-block btn-primary"> Save </button>
                         </div>
                     </div>
+
+                </div>
+                <div class="tab-pane fade" id="nav_keluarga" role="tabpanel" aria-labelledby="nav_keluarga">
+                </div>
+                <div class="tab-pane fade" id="nav_sip" role="tabpanel" aria-labelledby="nav_sip">
+
                 </div>
             </div>
         </div>

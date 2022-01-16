@@ -59,7 +59,7 @@ class Welcome extends CI_Controller {
         $string = '';
         $list = $this->Mglobals->getAll("komplek");
         foreach ($list->result() as $row) {
-            $string .= 'createMarker(['.$row->lat.','.$row->lon.'], "'.$row->nama_komplek.'", "'.$row->idkomplek.'","'.$gambar.'", 20, 20);';
+            $string .= 'createMarker(['.$row->lat.','.$row->lon.'], "'.$row->nama_komplek.'", "'.$this->modul->enkrip_url($row->idkomplek).'","'.$gambar.'", 20, 20);';
         }
         return $string;
     }

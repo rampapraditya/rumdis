@@ -21,6 +21,13 @@ class Users extends CI_Controller {
             $data['korps'] = $this->Mglobals->getAll("korps");
             $data['komplek'] = $this->Mglobals->getAll("komplek");
             
+            $idkomplek_lemparan = $this->modul->dekrip_url($this->uri->segment(3));
+            if(strlen($idkomplek_lemparan)){
+                $data['idkomplek_lemparan'] = $idkomplek_lemparan;
+            }else{
+                $data['idkomplek_lemparan'] = "";
+            }
+            
             $this->load->view('head', $data);
             $this->load->view('menu');
             $this->load->view('users/index');
@@ -32,8 +39,14 @@ class Users extends CI_Controller {
     
     public function ajaxlist() {
         if($this->session->userdata('logged')){
+            $q = "SELECT *, b.nama_pangkat, c.nama_korps FROM userslogin a, pangkat b, korps c where a.idpangkat = b.idpangkat and a.idkorps = c.idkorps and a.idrole = 'R2';";
+            $idkomplek_lemparan = $this->uri->segment(3);
+            if(strlen($idkomplek_lemparan)){
+                $q = "SELECT *, b.nama_pangkat, c.nama_korps FROM userslogin a, pangkat b, korps c where a.idpangkat = b.idpangkat and a.idkorps = c.idkorps and a.idrole = 'R2' and a.idkomplek like '%".$idkomplek_lemparan."%';";
+            }
+                
             $data = array();
-            $list = $this->Mglobals->getAllQ("SELECT *, b.nama_pangkat, c.nama_korps FROM userslogin a, pangkat b, korps c where a.idpangkat = b.idpangkat and a.idkorps = c.idkorps and a.idrole = 'R2';");
+            $list = $this->Mglobals->getAllQ($q);
             foreach ($list->result() as $row) {
                 $val = array();
                 $def = base_url().'assets/img/avatar.png';
@@ -357,6 +370,25 @@ class Users extends CI_Controller {
                     $data['keterangan'] = "";
                 }
                 
+                // membaca SIP
+                $cek_sip = $this->Mglobals->getAllQR("select count(*) as jml from sip where iduserslogin = '".$tersimpan->iduserslogin."';")->jml;
+                if($cek_sip > 0){
+                    $sip = $this->Mglobals->getAllQR("select * from sip where iduserslogin = '".$tersimpan->iduserslogin."';");
+                    $data['no_sip'] = $sip->no_sip;
+                    if(strlen($sip->dok_sip) > 0){
+                        if(file_exists($sip->dok_sip)){
+                            $data['unduh'] = "ya";
+                        }else{
+                            $data['unduh'] = "tidak";
+                        }
+                    }else{
+                        $data['unduh'] = "tidak";
+                    }
+                }else{
+                    $data['no_sip'] = "";
+                    $data['unduh'] = "tidak";
+                }
+                
                 $this->load->view('head', $data);
                 $this->load->view('menu');
                 $this->load->view('users/detil');
@@ -533,6 +565,141 @@ class Users extends CI_Controller {
                 $status = "Data gagal terhapus";
             }
             echo json_encode(array("status" => $status));
+        }else{
+            $this->modul->halaman('login');
+        }
+    }
+    
+    public function prosessip() {
+        if($this->session->userdata('logged')){
+            $iduserslogin = $this->input->post('iduserslogin');
+            
+            $jml_personil = $this->Mglobals->getAllQR("select count(*) as jml from sip where iduserslogin = '".$iduserslogin."';")->jml;
+            if($jml_personil > 0){
+                $mode = "update";
+            }else{
+                $mode = "simpan";
+            }
+            
+            if (isset($_FILES['file']['name'])) {
+                if(0 < $_FILES['file']['error']) {
+                    $status = "Error during file upload ".$_FILES['file']['error'];
+                }else{
+                    if($mode == "simpan"){
+                        $status = $this->simpan_dengan_foto_sip();
+                    }else if($mode == "update"){
+                        $status = $this->update_dengan_foto_sip();
+                    }
+                }
+            }else{
+                if($mode == "simpan"){
+                    $status = "Dokumen SIP wajib disertakan";
+                }else if($mode == "update"){
+                    $status = $this->update_tanpa_foto_sip();
+                }
+            }
+            
+            echo json_encode(array("status" => $status));
+        }else{
+            $this->modul->halaman('login');
+        }
+    }
+    
+    private function simpan_dengan_foto_sip() {
+        $config['upload_path'] = './assets/file/';
+        $config['allowed_types'] = 'jpg|jpeg|png|pdf|doc|docx';
+        $config['max_filename'] = '255';
+        $config['encrypt_name'] = TRUE;
+        //$config['max_size'] = '8024'; //8 MB
+        
+        $this->load->library('upload', $config);
+        if ($this->upload->do_upload('file')) {
+            $datafile = $this->upload->data();
+            $path = $config['upload_path'].$datafile['file_name'];
+
+            $data = array(
+                'idsip' => $this->Mglobals->autokode('S','idsip', 'sip', 2, 7),
+                'iduserslogin' => $this->input->post('iduserslogin'),
+                'no_sip' => $this->input->post('no_sip'),
+                'dok_sip' => $path
+            );
+            $simpan = $this->Mglobals->add("sip",$data);
+            if($simpan == 1){
+                $status = "SIP tersimpan";
+            }else{
+                $status = "SIP gagal tersimpan";
+            }
+        } else {
+            $status = $this->upload->display_errors();
+        }
+        return $status;
+    }
+    
+    private function update_dengan_foto_sip() {
+        $config['upload_path'] = './assets/file/';
+        $config['allowed_types'] = 'jpg|jpeg|png|pdf|doc|docx';
+        $config['max_filename'] = '255';
+        $config['encrypt_name'] = TRUE;
+        //$config['max_size'] = '8024'; //8 MB
+        
+        $lawas = $this->Mglobals->getAllQR("SELECT dok_sip FROM sip where iduserslogin = '".$this->input->post('iduserslogin')."';")->dok_sip;
+        if(strlen($lawas) > 0){
+            if(file_exists($lawas)){
+                unlink($lawas);
+            }
+        }
+        
+        $this->load->library('upload', $config);
+        if ($this->upload->do_upload('file')) {
+            $datafile = $this->upload->data();
+            $path = $config['upload_path'].$datafile['file_name'];
+
+            $data = array(
+                'no_sip' => $this->input->post('no_sip'),
+                'dok_sip' => $path
+            );
+            $kond['iduserslogin'] = $this->input->post('iduserslogin');
+            $update = $this->Mglobals->update("sip",$data, $kond);
+            if($update == 1){
+                $status = "SIP terupdate";
+            }else{
+                $status = "SIP gagal terupdate";
+            }
+        } else {
+            $status = $this->upload->display_errors();
+        }
+        return $status;
+    }
+    
+    private function update_tanpa_foto_sip() {
+        $data = array(
+            'no_sip' => $this->input->post('no_sip')
+        );
+        $kond['iduserslogin'] = $this->input->post('iduserslogin');
+        $update = $this->Mglobals->update("sip",$data, $kond);
+        if($update == 1){
+            $status = "SIP terupdate";
+        }else{
+            $status = "SIP gagal terupdate";
+        }
+        return $status;
+    }
+    
+    public function unduhfile() {
+        if($this->session->userdata('logged')){
+            $this->load->helper('download');
+            $iduserslogin = $this->modul->dekrip_url($this->uri->segment(3));
+            $cek = $this->Mglobals->getAllQR("select count(*) as jml from sip where iduserslogin = '".$iduserslogin."';")->jml;
+            if($cek > 0){
+                $berkas = $this->Mglobals->getAllQR("select dok_sip, iduserslogin from sip where iduserslogin = '".$iduserslogin."';");
+                if(strlen($berkas->dok_sip) > 0){
+                    if(file_exists($berkas->dok_sip)){
+                        force_download($berkas->dok_sip, NULL);
+                    }
+                }
+            }else{
+                $this->modul->pesan_halaman("Dokumen tidak ditemukan","users/detil/".$this->modul->enkrip_url($berkas->iduserslogin));
+            }
         }else{
             $this->modul->halaman('login');
         }

@@ -20,22 +20,24 @@ class Profileuser extends CI_Controller {
             $data['nrp'] = $ses['nrp'];
             $data['nama'] = $ses['nama'];
             
-            $data['pangkat'] = $this->Mglobals->getAll("pangkat");
+            $data['pangkat'] = $this->Mglobals->getAllQ("select * from pangkat where nama_pangkat <>  'ADMINISTRATOR';");
             $data['korps'] = $this->Mglobals->getAll("korps");
+            $data['komplek'] = $this->Mglobals->getAll("komplek");
             
             // membaca profile
-            $jml = $this->Mglobals->getAllQR("SELECT count(*) as jml FROM personil where nrp = '".$ses['nrp']."';")->jml;
+            $jml = $this->Mglobals->getAllQR("SELECT count(*) as jml FROM userslogin where iduserslogin = '".$ses['iduser']."';")->jml;
             if($jml > 0){
-                $tersimpan = $this->Mglobals->getAllQR("SELECT * FROM personil where nrp = '".$ses['nrp']."';");
+                $tersimpan = $this->Mglobals->getAllQR("SELECT * FROM userslogin where iduserslogin = '".$ses['iduser']."';");
                 $data['nm_personil'] = $tersimpan->nama;
                 $data['pangkat_personil'] = $tersimpan->idpangkat;
                 $data['korps_personil'] = $tersimpan->idkorps;
-                $data['status_personil'] = $tersimpan->status;
+                $data['komplek_personil'] = $tersimpan->idkomplek;
+                
             }else{
                 $data['nm_personil'] = $ses['nama'];
                 $data['pangkat_personil'] = "";
                 $data['korps_personil'] = "";
-                $data['status_personil'] = "";
+                $data['komplek_personil'] = "";
             }
             
             $this->load->view('head', $data);
@@ -56,28 +58,14 @@ class Profileuser extends CI_Controller {
             $config['encrypt_name'] = TRUE;
             //$config['max_size'] = '3024'; //3 MB
             
-            $mode = "simpan";
-            $jml = $this->Mglobals->getAllQR("SELECT count(*) as jml FROM personil where nrp = '".$this->input->post('nrp')."';")->jml;
-            if($jml > 0){
-                $mode = "update";
-            }
-
             if (isset($_FILES['file']['name'])) {
                 if(0 < $_FILES['file']['error']) {
                     $status = "Error during file upload ".$_FILES['file']['error'];
                 }else{
-                    if($mode == "simpan"){
-                        $status = $this->simpandenganfoto($config);
-                    }else if($mode == "update"){
-                        $status = $this->updatedenganfoto($config);
-                    }
+                    $status = $this->update_dengan_foto($config);
                 }
             }else{
-                if($mode == "simpan"){
-                    $status = $this->simpantanpafoto();
-                }else if($mode == "update"){
-                    $status = $this->updatetanpafoto();
-                }
+                $status = $this->updatetanpafoto();
             }
             
             echo json_encode(array("status" => $status));
@@ -86,48 +74,19 @@ class Profileuser extends CI_Controller {
         }
     }
     
-    private function simpantanpafoto() {
-        $data = array(
-            'idpersonil' => $this->Mglobals->autokode('P','idpersonil', 'personil', 2, 7),
-            'nrp' => $this->input->post('nrp'),
-            'nama' => $this->input->post('nama'),
-            'idpangkat' => $this->input->post('pangkat'),
-            'idkorps' => $this->input->post('korps'),
-            'status' => $this->input->post('status')
-        );
-        $simpan = $this->Mglobals->add("personil",$data);
-        if($simpan == 1){
-            
-            $subdata = array(
-                'nama' => $this->input->post('nama')
-            );
-            $kond['nrp'] = $this->input->post('nrp');
-            $this->Mglobals->update("userslogin",$subdata, $kond);
-        
-            $status = "Profile tersimpan";
-        }else{
-            $status = "Profile gagal tersimpan";
-        }
-        return $status;
-    }
-    
     private function updatetanpafoto() {
+        $ses = $this->session->userdata('loggeduser');
+        $iduser = $ses['iduser'];
+        
         $data = array(
             'nama' => $this->input->post('nama'),
             'idpangkat' => $this->input->post('pangkat'),
             'idkorps' => $this->input->post('korps'),
-            'status' => $this->input->post('status')
+            'idkomplek' => $this->input->post('komplek')
         );
-        $kond1['nrp'] = $this->input->post('nrp');
-        $simpan = $this->Mglobals->update("personil",$data, $kond1);
-        if($simpan == 1){
-            
-            $subdata = array(
-                'nama' => $this->input->post('nama')
-            );
-            $kond['nrp'] = $this->input->post('nrp');
-            $this->Mglobals->update("userslogin",$subdata, $kond);
-        
+        $kond['iduserslogin'] = $iduser;
+        $update = $this->Mglobals->update("userslogin",$data, $kond);
+        if($update == 1){
             $status = "Profile terupdate";
         }else{
             $status = "Profile gagal terupdate";
@@ -135,8 +94,11 @@ class Profileuser extends CI_Controller {
         return $status;
     }
     
-    private function updatedenganfoto($config) {
-        $foto = $this->Mglobals->getAllQR("SELECT foto FROM userslogin where nrp = '".$this->input->post('nrp')."';")->foto;
+    private function update_dengan_foto($config) {
+        $ses = $this->session->userdata('loggeduser');
+        $iduser = $ses['iduser'];
+            
+        $foto = $this->Mglobals->getAllQR("SELECT foto FROM userslogin where iduserslogin = '".$iduser."';")->foto;
         if(strlen($foto) > 0){
             if(file_exists($foto)){
                 unlink($foto);
@@ -152,75 +114,17 @@ class Profileuser extends CI_Controller {
 
             $resize_foto = $this->resizeImage($path, $newpath);
             if($resize_foto){
-                $data_users_login = array(
+                $data = array(
+                    'nrp' => $this->input->post('nrp'),
                     'nama' => $this->input->post('nama'),
+                    'idpangkat' => $this->input->post('pangkat'),
+                    'idkorps' => $this->input->post('korps'),
                     'foto' => $newpath
                 );
-                $kond['nrp'] = $this->input->post('nrp');
-                $update = $this->Mglobals->update("userslogin",$data_users_login, $kond);
+                $kond['iduserslogin'] = $iduser;
+                $update = $this->Mglobals->update("userslogin",$data, $kond);
                 if($update == 1){
                     unlink($path);
-                    
-                    // update untuk data
-                    $data = array(
-                        'nama' => $this->input->post('nama'),
-                        'idpangkat' => $this->input->post('pangkat'),
-                        'idkorps' => $this->input->post('korps'),
-                        'status' => $this->input->post('status')
-                    );
-                    $kond1['nrp'] = $this->input->post('nrp');
-                    $this->Mglobals->update("personil",$data, $kond1);
-        
-                    $status = "Profile terupdate";
-                }else{
-                    $status = "Profile gagal terupdate";
-                }
-            }else{
-                $status = "Resize foto gagal";
-            }
-        } else {
-            $status = $this->upload->display_errors();
-        }
-        return $status;
-    }
-    
-    private function simpandenganfoto($config) {
-        $foto = $this->Mglobals->getAllQR("SELECT foto FROM userslogin where nrp = '".$this->input->post('nrp')."';")->foto;
-        if(strlen($foto) > 0){
-            if(file_exists($foto)){
-                unlink($foto);
-            }
-        }
-        
-        $this->load->library('upload', $config);
-        if ($this->upload->do_upload('file')) {
-
-            $datafile = $this->upload->data();
-            $path = $config['upload_path'].$datafile['file_name'];
-            $newpath = $config['upload_newpath'].$datafile['file_name'];
-
-            $resize_foto = $this->resizeImage($path, $newpath);
-            if($resize_foto){
-                $data_users_login = array(
-                    'nama' => $this->input->post('nama'),
-                    'foto' => $newpath
-                );
-                $kond['nrp'] = $this->input->post('nrp');
-                $update = $this->Mglobals->update("userslogin",$data_users_login, $kond);
-                if($update == 1){
-                    unlink($path);
-                    
-                    // simpan untuk data baru
-                    $data = array(
-                        'idpersonil' => $this->Mglobals->autokode('P','idpersonil', 'personil', 2, 7),
-                        'nrp' => $this->input->post('nrp'),
-                        'nama' => $this->input->post('nama'),
-                        'idpangkat' => $this->input->post('pangkat'),
-                        'idkorps' => $this->input->post('korps'),
-                        'status' => $this->input->post('status')
-                    );
-                    $this->Mglobals->add("personil",$data);
-        
                     $status = "Profile tersimpan";
                 }else{
                     $status = "Profile gagal tersimpan";
