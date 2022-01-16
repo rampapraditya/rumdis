@@ -10,6 +10,92 @@
         });
     });
     
+    function simpandepan() {
+        var kode = document.getElementById('key').value;
+        var nrp = document.getElementById('nrp').value;
+        var nama = document.getElementById('nama').value;
+        var pangkat = document.getElementById('pangkat').value;
+        var korps = document.getElementById('korps').value;
+        var komplek = document.getElementById('komplek').value;
+        var foto = $('#foto').prop('files')[0];
+        
+        if (nrp === '') {
+            iziToast.warning({
+                title: 'Info',
+                message: 'NRP tidak boleh kosong',
+                position: 'topRight'
+            });
+        }else if(nama === ""){
+            iziToast.warning({
+                title: 'Info',
+                message: 'Nama tidak boleh kosong',
+                position: 'topRight'
+            });
+        }else if(pangkat === "-"){
+            iziToast.warning({
+                title: 'Info',
+                message: 'Pilih pangkat terlebih dahulu',
+                position: 'topRight'
+            });
+        }else if(korps === "-"){
+            iziToast.warning({
+                title: 'Info',
+                message: 'Pilih korps terlebih dahulu',
+                position: 'topRight'
+            });
+        }else if(komplek === "-"){
+            iziToast.warning({
+                title: 'Info',
+                message: 'Pilih komplek terlebih dahulu',
+                position: 'topRight'
+            });
+        } else {
+            $('#btnSaveDepan').text('Saving...'); 
+            $('#btnSaveDepan').attr('disabled');
+
+            var form_data = new FormData();
+            form_data.append('kode', kode);
+            form_data.append('nrp', nrp);            
+            form_data.append('nama', nama);
+            form_data.append('pangkat', pangkat);
+            form_data.append('korps', korps);
+            form_data.append('komplek', komplek);
+            form_data.append('file', foto);
+            
+            $.ajax({
+                url: "<?php echo base_url(); ?>profileuser/proses",
+                dataType: 'JSON',
+                cache: false,
+                contentType: false,
+                processData: false,
+                data: form_data,
+                type: 'POST',
+                success: function (response) {
+                    iziToast.success({
+                        title: 'Info',
+                        message: response.status,
+                        position: 'topRight'
+                    });
+                    reload();
+                    $('#modal_form').modal('hide');
+                    
+                    $('#btnSaveDepan').text('Save');
+                    $('#btnSaveDepan').attr('disabled', false);
+
+                },error: function (response) {
+                    
+                    iziToast.success({
+                        title: 'Info',
+                        message: response.status,
+                        position: 'topRight'
+                    });
+                    $('#btnSaveDepan').text('Save');
+                    $('#btnSaveDepan').attr('disabled', false);
+                }
+            });           
+        }
+    }
+    
     function simpan() {
         $('#btnSave').html('<i class="mdi mdi-content-save"></i> Proses... ');
         $('#btnSave').attr('disabled', true);
@@ -263,13 +349,127 @@
         <div class="section-body">
             <nav>
                 <div class="nav nav-tabs nav-fill" id="nav-tab" role="tablist">
-                    <a class="nav-item nav-link active" id="nav_tab_diri" data-toggle="tab" href="#nav_diri" role="tab" aria-controls="nav_diri" aria-selected="true">Identitas Diri</a>
+                    <a class="nav-item nav-link active" id="nav_tab_singkat" data-toggle="tab" href="#nav_singkat" role="tab" aria-controls="nav_singkat" aria-selected="true">Identitas Singkat</a>
+                    <a class="nav-item nav-link" id="nav_tab_diri" data-toggle="tab" href="#nav_diri" role="tab" aria-controls="nav_diri" aria-selected="true">Identitas Lengkap</a>
                     <a class="nav-item nav-link" id="nav_tab_keluarga" data-toggle="tab" href="#nav_keluarga" role="tab" aria-controls="nav_keluarga" aria-selected="false">Keluarga</a>
                     <a class="nav-item nav-link" id="nav_tab_sip" data-toggle="tab" href="#nav_sip" role="tab" aria-controls="nav_sip" aria-selected="false">SIP</a>
                 </div>
             </nav>
             <div class="tab-content" id="nav-tabContent" style="background-color: white;">
-                <div class="tab-pane fade show active" id="nav_diri" role="tabpanel" aria-labelledby="nav_diri" style="background-color: white;">
+                <div class="tab-pane fade show active" id="nav_singkat" role="tabpanel" aria-labelledby="nav_singkat" style="background-color: white;">
+                    <div class="card">
+                        <div class="card-body">
+                            <div class="form-body">
+                                <div class="row">
+                                    <div class="col-md-6">
+                                        <div class="form-group">
+                                            <label class="control-label col-md-12">NRP</label>
+                                            <div class="col-md-12">
+                                                <input id="nrp" name="nrp" class="form-control" type="text" autocomplete="off" value="<?php echo $nrp_user; ?>">
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div class="col-md-6">
+                                        <div class="form-group">
+                                            <label class="control-label col-md-12">NAMA</label>
+                                            <div class="col-md-12">
+                                                <input id="nama" name="nama" class="form-control" type="text" autocomplete="off" value="<?php echo $nama_user; ?>">
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="row">
+                                    <div class="col-md-6">
+                                        <div class="form-group">
+                                            <label class="control-label col-md-12">PANGKAT</label>
+                                            <div class="col-md-12">
+                                                <select id="pangkat" name="pangkat" class="form-control">
+                                                    <option value="-">- PILIH PANGKAT -</option>
+                                                    <?php
+                                                    foreach ($pangkat->result() as $row) {
+                                                        if($row->idpangkat == $idpangkat_user){
+                                                            ?>
+                                                    <option selected value="<?php echo $row->idpangkat; ?>"><?php echo $row->nama_pangkat; ?></option>
+                                                            <?php
+                                                        }else{
+                                                            ?>
+                                                    <option value="<?php echo $row->idpangkat; ?>"><?php echo $row->nama_pangkat; ?></option>
+                                                            <?php
+                                                        }
+
+                                                    }
+                                                    ?>
+                                                </select>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div class="col-md-6">
+                                        <div class="form-group">
+                                            <label class="control-label col-md-12">KORPS</label>
+                                            <div class="col-md-12">
+                                                <select id="korps" name="korps" class="form-control">
+                                                    <option value="-">- PILIH KORPS -</option>
+                                                    <?php
+                                                    foreach ($korps->result() as $row) {
+                                                        if($row->idkorps == $idkorps_user){
+                                                            ?>
+                                                    <option selected value="<?php echo $row->idkorps; ?>"><?php echo $row->nama_korps; ?></option>
+                                                            <?php
+                                                        }else{
+                                                            ?>
+                                                    <option value="<?php echo $row->idkorps; ?>"><?php echo $row->nama_korps; ?></option>
+                                                            <?php
+                                                        }
+                                                    }
+                                                    ?>
+                                                </select>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="row">
+                                    <div class="col-md-6">
+                                        <div class="form-group">
+                                            <label class="control-label col-md-12">FOTO</label>
+                                            <div class="col-md-12">
+                                                <input id="foto" name="foto" class="form-control" type="file" autocomplete="off">
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div class="col-md-6">
+                                        <div class="form-group">
+                                            <label class="control-label col-md-12">KOMPLEK</label>
+                                            <div class="col-md-12">
+                                                <select id="komplek" name="komplek" class="form-control">
+                                                    <option value="-">- PILIH KOMPLEK -</option>
+                                                    <?php
+                                                    foreach ($komplek->result() as $row) {
+                                                        if($row->idkomplek == $idkomplek){
+                                                            ?>
+                                                    <option selected value="<?php echo $row->idkomplek; ?>"><?php echo $row->nama_komplek; ?></option>
+                                                            <?php
+                                                        }else{
+                                                            ?>
+                                                    <option value="<?php echo $row->idkomplek; ?>"><?php echo $row->nama_komplek; ?></option>
+                                                            <?php
+                                                        }
+                                                    }
+                                                    ?>
+                                                </select>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="row">
+                                    <div class="col-md-12">
+                                        <button id="btnSaveDepan" type="button" onclick="simpandepan();" class="btn btn-block btn-primary"> Save </button>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="tab-pane fade" id="nav_diri" role="tabpanel" aria-labelledby="nav_diri" style="background-color: white;">
                     <div class="card">
                         <div class="card-body">
                             <div class="row">

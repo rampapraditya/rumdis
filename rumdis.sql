@@ -3,7 +3,7 @@
 -- https://www.phpmyadmin.net/
 --
 -- Host: 127.0.0.1:3306
--- Generation Time: Jan 16, 2022 at 03:28 AM
+-- Generation Time: Jan 16, 2022 at 07:36 AM
 -- Server version: 5.7.31
 -- PHP Version: 7.3.21
 
@@ -57,7 +57,7 @@ CREATE TABLE IF NOT EXISTS `detiluser` (
 
 INSERT INTO `detiluser` (`iddetiluser`, `iduserslogin`, `rt`, `rw`, `jalan`, `no`, `bl`, `th`, `blok`, `kesatuan`, `th_pem_penu`, `asal_usul`, `l_bangunan`, `l_tanah`, `tipe`, `b_rr_rb`, `ketentuan_sewa`, `keterangan`) VALUES
 ('D00001', 'U00002', 'OO1', 'O5', 'JL JAYA WIJAYA I', '177', 'VIII', '2017', 'PA-3', 'MENART-2', '1972', 'PEMBANGUNAN', 128, 180, 'T.120', 'B', 'ya', ''),
-('D00002', 'U00003', '05', '01', 'Pondok Jati AE 14', '11', '02', '08', 'AE', 'TNI', '2007', 'Pembangunan', 600, 1500, '55', 'B', 'tidak', '-');
+('D00002', 'U00003', '05', '01', 'Pondok Jati AE 14', '11', '02', '08', 'AE', 'TNI', '2007', 'Pembangunan', 600, 1500, '55', 'B', 'tidak', 'isi keterangan test');
 
 -- --------------------------------------------------------
 
@@ -112,7 +112,7 @@ CREATE TABLE IF NOT EXISTS `keluarga` (
 --
 
 INSERT INTO `keluarga` (`idkeluarga`, `iduserslogin`, `nama`, `jkel`, `tmp_lahir`, `tgl_lahir`, `hubungan`) VALUES
-('K00001', 'U00003', 'Atika', 'Perempuan', 'Sidoarjo', '2022-01-16', 'ISTRI');
+('K00001', 'U00003', 'Atika Wardhani Rustiaria', 'Perempuan', 'Sidoarjo', '2022-01-16', 'ISTRI');
 
 -- --------------------------------------------------------
 
@@ -276,7 +276,7 @@ CREATE TABLE IF NOT EXISTS `sip` (
 --
 
 INSERT INTO `sip` (`idsip`, `iduserslogin`, `no_sip`, `dok_sip`) VALUES
-('S00001', 'U00003', 'SIP012', './assets/file/62839a525e681a9158bc4b92d57abb2b.pdf');
+('S00001', 'U00003', 'SIP012', './assets/file/3111c1e1392bfe1a81e2475a71371b46.pdf');
 
 -- --------------------------------------------------------
 
@@ -308,7 +308,7 @@ CREATE TABLE IF NOT EXISTS `userslogin` (
 INSERT INTO `userslogin` (`iduserslogin`, `nrp`, `pass`, `nama`, `foto`, `idrole`, `idpangkat`, `idkorps`, `idkomplek`) VALUES
 ('U00001', 'ADMIN', 'aGtq', 'ADMINISTRATOR', '', 'R1', 'P00001', 'K00001', ''),
 ('U00002', '15040/P', 'aGtq', 'LAODE JIMMY HR', '', 'R2', 'P00012', 'K00008', 'K00002'),
-('U00003', '111', 'aGtq', 'Rampa Praditya', './assets/img/3f1b9bc7eb1af46592288464ee367259.png', 'R2', 'P00010', 'K00001', 'K00005');
+('U00003', '111', 'aGtq', 'Rampa Praditya', './assets/img/40459a5bfb3caf1c1caeb348d1c0c0fb.png', 'R2', 'P00010', 'K00001', 'K00005');
 
 --
 -- Constraints for dumped tables

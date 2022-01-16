@@ -24,12 +24,15 @@ class Profileuser extends CI_Controller {
             $data['komplek'] = $this->Mglobals->getAll("komplek");
             
             // membaca profile
-            $tersimpan = $this->Mglobals->getAllQR("select a.iduserslogin, a.nrp, a.nama, b.nama_pangkat, c.nama_korps FROM userslogin a, pangkat b, korps c where a.idpangkat = b.idpangkat and a.idkorps = c.idkorps and a.iduserslogin = '".$ses['iduser']."';");
+            $tersimpan = $this->Mglobals->getAllQR("select a.iduserslogin, a.nrp, a.nama, a.idpangkat, b.nama_pangkat, a.idkorps, c.nama_korps, a.idkomplek FROM userslogin a, pangkat b, korps c where a.idpangkat = b.idpangkat and a.idkorps = c.idkorps and a.iduserslogin = '".$ses['iduser']."';");
             $data['iduser'] = $tersimpan->iduserslogin;
             $data['nrp_user'] = $tersimpan->nrp;
             $data['nama_user'] = $tersimpan->nama;
+            $data['idpangkat_user'] = $tersimpan->idpangkat;
             $data['pangkat_user'] = $tersimpan->nama_pangkat;
+            $data['idkorps_user'] = $tersimpan->idkorps;
             $data['korps_user'] = $tersimpan->nama_korps;
+            $data['idkomplek'] = $tersimpan->idkomplek;
             
             // membaca detil
             $cek_detil = $this->Mglobals->getAllQR("select count(*) as jml from detiluser where iduserslogin = '".$ses['iduser']."';")->jml;
@@ -169,6 +172,7 @@ class Profileuser extends CI_Controller {
                     'nama' => $this->input->post('nama'),
                     'idpangkat' => $this->input->post('pangkat'),
                     'idkorps' => $this->input->post('korps'),
+                    'idkomplek' => $this->input->post('komplek'),
                     'foto' => $newpath
                 );
                 $kond['iduserslogin'] = $iduser;

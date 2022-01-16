@@ -17,7 +17,7 @@ class Welcome extends CI_Controller {
             $data['username'] = $ses['iduser'];
             $data['nrp'] = $ses['nrp'];
             $data['nama'] = $ses['nama'];
-            $data['jml_penghuni'] = 0;
+            $data['jml_penghuni'] = $this->Mglobals->getAllQR("select count(*) as jml from userslogin a, role b where a.idrole = b.idrole and b.idrole <> 'R1';")->jml;
             $data['jml_rumdis'] = $this->Mglobals->getAllQR("select count(*) as jml from komplek;")->jml;
             
             $jml_identitas = $this->Mglobals->getAllQR("SELECT count(*) as jml FROM identitas;")->jml;
